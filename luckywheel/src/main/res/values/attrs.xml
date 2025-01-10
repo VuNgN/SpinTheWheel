@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LuckyWheel">
+        <attr name="background_color" format="color" />
+        <attr name="arrow_image" format="reference" />
+        <attr name="square_layout" format="boolean" />
+        <attr name="image_padding" format="dimension" />
+        <attr name="text_padding" format="dimension" />
+        <attr name="text_size" format="dimension" />
+        <attr name="text_color" format="color" />
+        <attr name="font_family" format="reference" />
+    </declare-styleable>
+</resources>
