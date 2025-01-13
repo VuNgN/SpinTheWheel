@@ -38,14 +38,13 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun updateItem(position: Int, item: WheelItem) {
         _items[position] = item
-        notifyItemChanged(position + 1)
         notifyItemChanged(0)
+        notifyItemChanged(position + 1)
     }
 
     fun deleteItem(position: Int) {
         _items.removeAt(position)
-        notifyItemRemoved(position + 1)
-        notifyItemChanged(0)
+        notifyDataSetChanged()
     }
 
     class HeaderViewHolder(private val binding: ItemHeaderBinding) :
@@ -55,6 +54,12 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun bind(items: List<WheelItem>, listener: Listener? = null) {
             wheelItems = items
+            if (wheelItems.size <= 2) {
+                binding.swAutoHide.isChecked = false
+                binding.swAutoHide.isEnabled = false
+            } else {
+                binding.swAutoHide.isEnabled = true
+            }
             setupLuckyWheel(listener)
             setupTextSize()
             setupSliceRepeat()
@@ -66,11 +71,9 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun setupLuckyWheel(listener: Listener?) {
             lw.addWheelItems(wheelItems)
-            lw.setTarget(1)
             lw.setLuckyWheelReachTheTarget {
                 binding.sbTextSize.isEnabled = true
                 binding.sbSpinTime.isEnabled = true
-                binding.tvResult.text = it.text
                 if (binding.swAutoHide.isChecked) {
                     lw.resetWheel()
                 }
@@ -172,7 +175,6 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private fun spinTheWheel() {
             binding.sbTextSize.isEnabled = false
             binding.sbSpinTime.isEnabled = false
-            binding.tvResult.text = "Spinning..."
             val randomNum = WheelUtils.getRandomIndex(wheelItems)
             Log.d(TAG, "onCreate: $randomNum")
             lw.rotateWheelTo(randomNum)

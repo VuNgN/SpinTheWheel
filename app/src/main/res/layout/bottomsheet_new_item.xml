@@ -65,7 +65,7 @@
             android:id="@+id/bcp_background_color"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:color="#FFC107" />
+            app:color="@color/black" />
     </LinearLayout>
 
     <EditText

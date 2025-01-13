@@ -7,4 +7,10 @@
         <attr name="border_color" />
         <attr name="border_width" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="MessageDialog">
+        <attr name="title" />
+        <attr name="message" format="string" />
+        <attr name="positive_button_text" format="string" />
+        <attr name="negative_button_text" format="string" />
+    </declare-styleable>
 </resources>

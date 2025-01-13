@@ -15,7 +15,7 @@ class BottomSheetAddItem : BottomSheetDialogFragment {
     private var listener: AddItemListener? = null
     private var content: String = ""
     private var textColor: Int = Color.WHITE
-    private var backgroundColor: Int = Color.RED
+    private var backgroundColor: Int = Color.BLACK
     private var probability: Int = 1
 
     constructor() : super()

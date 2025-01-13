@@ -13,7 +13,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
@@ -85,35 +84,70 @@ final class WheelView extends View {
         invalidate();
     }
 
+    /**
+     * Function to set items image padding
+     *
+     * @param imagePadding Image padding
+     */
     public void setItemsImagePadding(int imagePadding) {
         this.imagePadding = imagePadding;
         invalidate();
     }
 
+    /**
+     * Function to set items text padding from edge of the arc
+     *
+     * @param textPadding Text padding
+     */
     public void setItemsTextPadding(int textPadding) {
         this.textPadding = textPadding;
         invalidate();
     }
 
+    /**
+     * Function to set items text size
+     *
+     * @param textSize Text size
+     */
     public void setItemsTextSize(int textSize) {
         this.textSize = textSize;
         postInvalidate();
     }
 
+    /**
+     * Function to set items text color
+     *
+     * @param textColor Text color
+     */
     public void setItemsTextColor(int textColor) {
         this.textColor = textColor;
         postInvalidate();
     }
 
+    /**
+     * Function to set items font family
+     *
+     * @param fontFamily Font family
+     */
     public void setItemsFontFamily(Typeface fontFamily) {
         this.fontFamily = fontFamily;
         postInvalidate();
     }
 
+    /**
+     * Function to set rotate time
+     *
+     * @param time Time to rotate
+     */
     public void setRotateTime(int time) {
         this.rotateTime = time;
     }
 
+    /**
+     * Function to set slice repeat
+     *
+     * @param sliceRepeat Slice repeat
+     */
     public void setSliceRepeat(int sliceRepeat) {
         this.wheelItems = WheelUtils.generateListBaseOnSliceRepeat(wheelItemsOriginal, sliceRepeat);
         invalidate();
@@ -126,6 +160,15 @@ final class WheelView extends View {
      */
     public void setWheelListener(OnLuckyWheelReachTheTarget onLuckyWheelReachTheTarget) {
         this.onLuckyWheelReachTheTarget = onLuckyWheelReachTheTarget;
+    }
+
+    /**
+     * Function to set rotation listener
+     *
+     * @param onRotationListener Rotation listener
+     */
+    public void setOnRotationListener(OnRotationListener onRotationListener) {
+        this.onRotationListener = onRotationListener;
     }
 
     /**
@@ -176,10 +219,8 @@ final class WheelView extends View {
         matrix.postRotate(tempAngle + 120);
         matrix.postTranslate(px, py);
         canvas.drawBitmap(bitmap, matrix, new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG));
-        Log.d("sadsdsddssd", bitmap.getWidth() + " : " + bitmap.getHeight());
         matrix.reset();
     }
-
 
     /**
      * Function to draw text below image
@@ -214,6 +255,11 @@ final class WheelView extends View {
         canvas.rotate(-(tempAngle + sweepAngle / 2 + 180), center, center);
     }
 
+    /**
+     * Function to draw shadow of the inside wheel's edge
+     *
+     * @param canvas Canvas to draw
+     */
     private void drawShadow(Canvas canvas) {
         Bitmap shadow = BitmapFactory.decodeResource(getResources(), R.drawable.ig_shadow);
         Rect rect = new Rect(padding - 2, padding - 2, radius + padding, radius + padding);
@@ -327,9 +373,5 @@ final class WheelView extends View {
         radius = width - padding * 2;
         center = width / 2;
         setMeasuredDimension(width, width);
-    }
-
-    public void setOnRotationListener(OnRotationListener onRotationListener) {
-        this.onRotationListener = onRotationListener;
     }
 }

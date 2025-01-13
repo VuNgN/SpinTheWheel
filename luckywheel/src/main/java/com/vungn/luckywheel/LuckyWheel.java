@@ -24,7 +24,6 @@ import java.util.List;
 public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnRotationListener {
     private WheelView wheelView;
     private ImageView arrow;
-    private int target = -1;
     private boolean isRotate = false;
     private WheelListener listener;
 
@@ -46,12 +45,7 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
         wheelView = findViewById(R.id.wv_main_wheel);
         wheelView.setOnRotationListener(this);
         arrow = findViewById(R.id.iv_arrow);
-        arrow.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onTouchTheSpin();
-            }
-        });
+        arrow.setOnClickListener(v -> listener.onTouchTheSpin());
     }
 
     /**
@@ -96,36 +90,62 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     }
 
     /**
-     * @param target target to rotate before swipe
+     * Function to set font family of wheel items
+     *
+     * @param typeface font from resource
      */
-    public void setTarget(int target) {
-        this.target = target;
-    }
-
     public void setFontFamily(Typeface typeface) {
         wheelView.setItemsFontFamily(typeface);
     }
 
+    /**
+     * Function to set text size of wheel items
+     *
+     * @param textSize text size
+     */
     public void setTextSize(int textSize) {
         wheelView.setItemsTextSize(textSize);
     }
 
+    /**
+     * Function to set listener of wheel
+     *
+     * @param listener wheel listener
+     */
     public void setListener(WheelListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * Function to set spin time of wheel by default configs
+     *
+     * @param spinTime default spin times
+     */
     public void setSpinTime(SpinTime spinTime) {
         wheelView.setRotateTime(spinTime.value);
     }
 
-    public void setSliceRepeat(int sliceRepeat) {
-        wheelView.setSliceRepeat(sliceRepeat);
-    }
-
+    /**
+     * Function to set spin time of wheel by millisecond
+     *
+     * @param millisecond millisecond to spin
+     */
     public void setSpinTime(int millisecond) {
         wheelView.setRotateTime(millisecond);
     }
 
+    /**
+     * Function to set slice repeat of wheel
+     *
+     * @param sliceRepeat slice repeat
+     */
+    public void setSliceRepeat(int sliceRepeat) {
+        wheelView.setSliceRepeat(sliceRepeat);
+    }
+
+    /**
+     * Function to reset wheel to zero angle
+     */
     public void resetWheel() {
         wheelView.resetRotationLocationToZeroAngle();
     }

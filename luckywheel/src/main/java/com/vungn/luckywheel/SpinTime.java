@@ -1,5 +1,9 @@
 package com.vungn.luckywheel;
 
+/**
+ * Created by Vũ Nguyễn on 10/01/2025.
+ */
+
 public enum SpinTime {
     X1(1000),
     X2(2000),

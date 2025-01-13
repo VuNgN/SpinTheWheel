@@ -1,9 +1,9 @@
 package com.vungn.luckywheeldemo
 
-import android.content.res.Resources
+import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
-import android.util.TypedValue
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -32,9 +32,13 @@ class MainActivity : AppCompatActivity() {
             items = wheelItems
             listener = object : RvAdapter.Listener {
                 override fun onSpinTheWheelSuccess(wheelItem: WheelItem, autoHide: Boolean) {
-                    if (!autoHide) {
-                        binding.main.setBackgroundColor(wheelItem.backgroundColor)
+                    if (autoHide) {
+                        deleteItem(items.indexOf(wheelItem))
                     }
+                    showResultDialog(wheelItem, autoHide || items.size <= 2) {
+                        deleteItem(items.indexOf(wheelItem))
+                    }
+                    binding.main.setBackgroundColor(wheelItem.backgroundColor)
                 }
 
                 override fun onAddItemClick() {
@@ -74,10 +78,7 @@ class MainActivity : AppCompatActivity() {
         binding.main.adapter = adapter
         binding.main.apply {
             layoutManager = GridLayoutManager(
-                this@MainActivity,
-                span,
-                GridLayoutManager.VERTICAL,
-                false
+                this@MainActivity, span, GridLayoutManager.VERTICAL, false
             ).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -112,12 +113,38 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun Resources.getDpOfFloat(dp: Float): Int {
-        return Math.round(
-            TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dp, this.displayMetrics
-            )
-        )
+    private fun showResultDialog(
+        result: WheelItem,
+        autoHide: Boolean,
+        onPositiveClick: () -> Unit = {}
+    ) {
+        val dialogView = MessageDialog(this)
+        dialogView.setTitle("We have a winner!")
+        dialogView.setMessage(result.text)
+        dialogView.setMessageColor(result.textColor, result.backgroundColor)
+        dialogView.setPositiveButtonText("Hide slice")
+        dialogView.setNegativeButtonText("Ok")
+        if (autoHide) {
+            dialogView.hidePositiveButton()
+        }
+        val dialog = Dialog(this)
+        dialog.setContentView(dialogView)
+        dialogView.setOnMessageDialogListener(object : MessageDialog.OnMessageDialogListener {
+            override fun onNegativeClick() {
+                dialog.dismiss()
+                dialog.cancel()
+            }
+
+            override fun onPositiveClick() {
+                onPositiveClick()
+                dialog.dismiss()
+                dialog.cancel()
+            }
+        })
+        dialog.window?.apply {
+            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+        dialog.show()
     }
 
     companion object {
