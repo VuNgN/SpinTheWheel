@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="5dp"
+    android:background="#323232 "
+    android:orientation="horizontal"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="10dp">
+
+    <com.skydoves.colorpickerview.AlphaTileView
+        android:id="@+id/flag_color_layout_left"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:orientation="vertical" />
+
+    <TextView
+        android:id="@+id/flag_color_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        tools:text="#ffffff" />
+
+    <com.skydoves.colorpickerview.AlphaTileView
+        android:id="@+id/flag_color_layout_right"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical"
+        android:visibility="gone" />
+</LinearLayout>

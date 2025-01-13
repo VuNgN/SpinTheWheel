@@ -2,6 +2,8 @@ package com.vungn.luckywheel;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by Vũ Nguyễn on 10/01/2025.
  */
@@ -69,5 +71,14 @@ public class WheelItem {
 
     public void setProbability(int probability) {
         this.probability = probability;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof WheelItem) {
+            WheelItem item = (WheelItem) obj;
+            return item.getBackgroundColor() == backgroundColor && item.getTextColor() == textColor && item.getText().equals(text) && item.getProbability() == probability;
+        }
+        return false;
     }
 }

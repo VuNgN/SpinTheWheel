@@ -118,8 +118,16 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
         wheelView.setRotateTime(spinTime.value);
     }
 
-    private void setSpinTime(int millisecond) {
+    public void setSliceRepeat(int sliceRepeat) {
+        wheelView.setSliceRepeat(sliceRepeat);
+    }
+
+    public void setSpinTime(int millisecond) {
         wheelView.setRotateTime(millisecond);
+    }
+
+    public void resetWheel() {
+        wheelView.resetRotationLocationToZeroAngle();
     }
 
     /**
@@ -132,7 +140,7 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             return;
         }
         isRotate = true;
-        wheelView.resetRotationLocationToZeroAngle(number);
+        wheelView.rotateWheelToTarget(number);
     }
 
     final int SWIPE_DISTANCE_THRESHOLD = 100;

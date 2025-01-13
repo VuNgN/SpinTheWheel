@@ -32,7 +32,20 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun addItem(item: WheelItem) {
         _items.add(item)
-        notifyItemInserted(_items.size - 1)
+        notifyItemChanged(0)
+        notifyItemInserted(_items.size)
+    }
+
+    fun updateItem(position: Int, item: WheelItem) {
+        _items[position] = item
+        notifyItemChanged(position + 1)
+        notifyItemChanged(0)
+    }
+
+    fun deleteItem(position: Int) {
+        _items.removeAt(position)
+        notifyItemRemoved(position + 1)
+        notifyItemChanged(0)
     }
 
     class HeaderViewHolder(private val binding: ItemHeaderBinding) :
@@ -44,7 +57,11 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             wheelItems = items
             setupLuckyWheel(listener)
             setupTextSize()
+            setupSliceRepeat()
             setupSpinTime()
+            binding.btnAddItem.setOnClickListener {
+                listener?.onAddItemClick()
+            }
         }
 
         private fun setupLuckyWheel(listener: Listener?) {
@@ -54,7 +71,10 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.sbTextSize.isEnabled = true
                 binding.sbSpinTime.isEnabled = true
                 binding.tvResult.text = it.text
-                listener?.onSpinTheWheelSuccess(it)
+                if (binding.swAutoHide.isChecked) {
+                    lw.resetWheel()
+                }
+                listener?.onSpinTheWheelSuccess(it, binding.swAutoHide.isChecked)
             }
             lw.setListener(object : WheelListener {
                 override fun onSlideTheWheel() {
@@ -79,7 +99,6 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.sbTextSize.apply {
                 progress = 2
                 max = 8
-                incrementProgressBy(1)
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
                         seekBar: SeekBar?, progress: Int, fromUser: Boolean
@@ -104,13 +123,35 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
 
+        private fun setupSliceRepeat() {
+            val sliceRepeatTextView = binding.tvSliceRepeat
+            sliceRepeatTextView.text = "1"
+            lw.setSliceRepeat(1)
+            binding.sbSliceRepeat.apply {
+                max = 1
+                setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(
+                        seekBar: SeekBar?, progress: Int, fromUser: Boolean
+                    ) {
+                        sliceRepeatTextView.text = "${progress + 1}"
+                    }
+
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                        lw.setSliceRepeat(progress + 1)
+                    }
+                })
+            }
+        }
+
         private fun setupSpinTime() {
             val spinTimeTextView = binding.tvSpinTime
             spinTimeTextView.text = "3x"
             binding.sbSpinTime.apply {
                 progress = 1
                 max = 4
-                incrementProgressBy(1)
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
                         seekBar: SeekBar?, progress: Int, fromUser: Boolean
@@ -132,7 +173,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.sbTextSize.isEnabled = false
             binding.sbSpinTime.isEnabled = false
             binding.tvResult.text = "Spinning..."
-            val randomNum = (0..<WheelUtils.calculateTotalProbability(wheelItems)).random()
+            val randomNum = WheelUtils.getRandomIndex(wheelItems)
             Log.d(TAG, "onCreate: $randomNum")
             lw.rotateWheelTo(randomNum)
         }
@@ -144,11 +185,11 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     class SliceViewHolder(private val binding: ItemSliceBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: WheelItem, listener: Listener? = null) {
+        fun bind(item: WheelItem, position: Int, listener: Listener? = null) {
             binding.main.setCardBackgroundColor(item.backgroundColor)
             binding.tvSlice.text = item.text
             binding.main.setOnClickListener {
-                listener?.onSliceClick(item)
+                listener?.onSliceClick(position, item)
             }
         }
     }
@@ -172,14 +213,16 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is HeaderViewHolder -> holder.bind(_items, _listener)
-            is SliceViewHolder -> holder.bind(_items[position - 1], _listener)
+            is SliceViewHolder -> holder.bind(_items[position - 1], position - 1, _listener)
         }
     }
 
     interface Listener {
-        fun onSpinTheWheelSuccess(wheelItem: WheelItem)
+        fun onSpinTheWheelSuccess(wheelItem: WheelItem, autoHide: Boolean)
 
-        fun onSliceClick(wheelItem: WheelItem)
+        fun onAddItemClick()
+
+        fun onSliceClick(position: Int, wheelItem: WheelItem)
     }
 
     companion object {

@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -30,12 +31,42 @@ class MainActivity : AppCompatActivity() {
         val adapter = RvAdapter().apply {
             items = wheelItems
             listener = object : RvAdapter.Listener {
-                override fun onSpinTheWheelSuccess(wheelItem: WheelItem) {
-                    binding.main.setBackgroundColor(wheelItem.backgroundColor)
+                override fun onSpinTheWheelSuccess(wheelItem: WheelItem, autoHide: Boolean) {
+                    if (!autoHide) {
+                        binding.main.setBackgroundColor(wheelItem.backgroundColor)
+                    }
                 }
 
-                override fun onSliceClick(wheelItem: WheelItem) {
+                override fun onAddItemClick() {
+                    BottomSheetAddItem().apply {
+                        setListener(object : BottomSheetAddItem.AddItemListener {
+                            override fun onAddItem(wheelItem: WheelItem) {
+                                addItem(wheelItem)
+                            }
+                        })
+                    }.show(supportFragmentManager, TAG)
+                }
 
+                override fun onSliceClick(position: Int, wheelItem: WheelItem) {
+                    BottomSheetEditItem(position, wheelItem).apply {
+                        setListener(object : BottomSheetEditItem.EditItemListener {
+                            override fun onSaveItem(position: Int, wheelItem: WheelItem) {
+                                updateItem(position, wheelItem)
+                            }
+
+                            override fun onDeleteItem(position: Int) {
+                                if (items.size == 2) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "You must have at least 2 items",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return
+                                }
+                                deleteItem(position)
+                            }
+                        })
+                    }.show(supportFragmentManager, TAG)
                 }
             }
         }
@@ -71,39 +102,12 @@ class MainActivity : AppCompatActivity() {
     private fun generateWheelItems() {
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#F8C448"), Color.parseColor("#FFFFFF"), "100 $", 2
+                Color.parseColor("#F8C448"), Color.parseColor("#FFFFFF"), "100 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#39A1E8"), Color.parseColor("#FFFFFF"), "2 $", 4
-            )
-        )
-        wheelItems.add(
-            WheelItem(
-                Color.parseColor("#C13DCA"), Color.parseColor("#FFFFFF"), "30 $"
-            )
-        )
-        wheelItems.add(
-            WheelItem(
-                Color.parseColor("#87D657"), Color.parseColor("#FFFFFF"), "4000 $"
-            )
-        )
-        wheelItems.add(
-            WheelItem(
-                Color.parseColor("#0DCC6A"), Color.parseColor("#FFFFFF"), "50000000000000 $"
-            )
-        )
-        wheelItems.add(
-            WheelItem(
-                Color.parseColor("#2FAF74"), Color.parseColor("#FFFFFF"), "60 $"
-            )
-        )
-        wheelItems.add(
-            WheelItem(
-                Color.parseColor("#E65051"),
-                Color.parseColor("#FFFFFF"),
-                "700 2000 20000 3000000 30"
+                Color.parseColor("#39A1E8"), Color.parseColor("#FFFFFF"), "2 $"
             )
         )
     }

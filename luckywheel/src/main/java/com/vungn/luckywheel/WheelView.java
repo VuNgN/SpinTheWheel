@@ -38,6 +38,7 @@ final class WheelView extends View {
     private int padding, radius, center, wheelBackground, imagePadding, textPadding;
     private Typeface fontFamily;
     private List<WheelItem> wheelItems;
+    private List<WheelItem> wheelItemsOriginal;
     private OnLuckyWheelReachTheTarget onLuckyWheelReachTheTarget;
     private OnRotationListener onRotationListener;
 
@@ -113,6 +114,11 @@ final class WheelView extends View {
         this.rotateTime = time;
     }
 
+    public void setSliceRepeat(int sliceRepeat) {
+        this.wheelItems = WheelUtils.generateListBaseOnSliceRepeat(wheelItemsOriginal, sliceRepeat);
+        invalidate();
+    }
+
     /**
      * Function to set wheel listener
      *
@@ -128,6 +134,7 @@ final class WheelView extends View {
      * @param wheelItems Wheels model item
      */
     public void addWheelItems(List<WheelItem> wheelItems) {
+        this.wheelItemsOriginal = wheelItems;
         this.wheelItems = WheelUtils.generateListBasedOnProbability(wheelItems);
         invalidate();
     }
@@ -223,41 +230,54 @@ final class WheelView extends View {
         float targetAngle = getAngleOfIndexTarget(target);
         float sweepAngle = (float) 360 / wheelItems.size();
         float wheelItemCenter = (sweepAngle / 2 + 270) - targetAngle;
-        animate().setInterpolator(new DecelerateInterpolator()).setDuration(rotateTime).rotation((360 * 15) + wheelItemCenter).setListener(new Animator.AnimatorListener() {
+        animate().setDuration(0).rotation(0).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(@NonNull Animator animation) {
-
             }
 
             @Override
             public void onAnimationEnd(@NonNull Animator animation) {
-                if (onLuckyWheelReachTheTarget != null) {
-                    onLuckyWheelReachTheTarget.onReachTarget(wheelItems.get(target));
-                }
-                if (onRotationListener != null) {
-                    onRotationListener.onFinishRotation();
-                }
+                animate().setInterpolator(new DecelerateInterpolator()).setDuration(rotateTime).rotation((360 * 15) + wheelItemCenter).setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(@NonNull Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animation) {
+                        if (onLuckyWheelReachTheTarget != null) {
+                            onLuckyWheelReachTheTarget.onReachTarget(wheelItems.get(target));
+                        }
+                        if (onRotationListener != null) {
+                            onRotationListener.onFinishRotation();
+                        }
+                        clearAnimation();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(@NonNull Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(@NonNull Animator animation) {
+                    }
+                }).start();
                 clearAnimation();
             }
 
             @Override
             public void onAnimationCancel(@NonNull Animator animation) {
-
             }
 
             @Override
             public void onAnimationRepeat(@NonNull Animator animation) {
-
             }
-        }).start();
+        });
     }
 
     /**
-     * Function to rotate to zero angle
-     *
-     * @param target target to reach
+     * Function to reset rotation location to zero angle
      */
-    public void resetRotationLocationToZeroAngle(final int target) {
+    public void resetRotationLocationToZeroAngle() {
         animate().setDuration(0).rotation(0).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(@NonNull Animator animation) {
@@ -266,7 +286,6 @@ final class WheelView extends View {
 
             @Override
             public void onAnimationEnd(@NonNull Animator animation) {
-                rotateWheelToTarget(target);
                 clearAnimation();
             }
 

@@ -42,6 +42,7 @@ android {
 dependencies {
     implementation(project(":luckywheel"))
 
+    implementation(libs.colorpickerview)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)

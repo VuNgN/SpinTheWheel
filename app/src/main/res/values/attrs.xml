@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="title" format="string" />
+    <attr name="border_color" format="color" />
+    <declare-styleable name="ButtonColorPicker">
+        <attr name="color" format="color" />
+        <attr name="border_color" />
+        <attr name="border_width" format="dimension" />
+    </declare-styleable>
+</resources>

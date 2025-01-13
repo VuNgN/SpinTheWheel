@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Lucky Wheel Demo</string>
     <string name="start">start</string>
+    <string name="hex_color">#%1$s</string>
 </resources>
