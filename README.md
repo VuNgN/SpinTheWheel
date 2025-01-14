@@ -32,6 +32,9 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 | ------------- | ------------- | ------------ |
 
 ## Installation
+
+[![](https://jitpack.io/v/VuNgN/SpinTheWheel.svg)](https://jitpack.io/#VuNgN/SpinTheWheel)
+
 ### Gradle Kotlin DSL
 
 1. Add Jitpack to your project-level `settings.gradle.kts`:
@@ -48,7 +51,7 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 2. Add the library dependency to your module-level `build.gradle.kts`:
     ```kotlin
     dependencies {
-        implementation("")
+        implementation("com.github.VuNgN:SpinTheWheel:latest-version")
     }
     ```
 
@@ -68,7 +71,7 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 2. Add the library dependency to your module-level `build.gradle`:
     ```groovy
     dependencies {
-        implementation ''
+        implementation 'com.github.VuNgN:SpinTheWheel:latest-version'
     }
     ```
 
@@ -86,7 +89,11 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 
 2. Add the library dependency:
     ```xml
-    
+    <dependency>
+	    <groupId>com.github.VuNgN</groupId>
+	    <artifactId>SpinTheWheel</artifactId>
+	    <version>latest-version</version>
+	</dependency>
     ```
 
 ## Usage
