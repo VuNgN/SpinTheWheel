@@ -73,6 +73,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             lw.addWheelItems(wheelItems)
             lw.setLuckyWheelReachTheTarget {
                 binding.sbTextSize.isEnabled = true
+                binding.sbSliceRepeat.isEnabled = true
                 binding.sbSpinTime.isEnabled = true
                 if (binding.swAutoHide.isChecked) {
                     lw.resetWheel()
@@ -131,6 +132,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             sliceRepeatTextView.text = "1"
             lw.setSliceRepeat(1)
             binding.sbSliceRepeat.apply {
+                progress = 0
                 max = 1
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
@@ -174,6 +176,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun spinTheWheel() {
             binding.sbTextSize.isEnabled = false
+            binding.sbSliceRepeat.isEnabled = false
             binding.sbSpinTime.isEnabled = false
             val randomNum = WheelUtils.getRandomIndex(wheelItems)
             Log.d(TAG, "onCreate: $randomNum")
@@ -190,6 +193,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun bind(item: WheelItem, position: Int, listener: Listener? = null) {
             binding.main.setCardBackgroundColor(item.backgroundColor)
             binding.tvSlice.text = item.text
+            binding.tvSlice.setTextColor(item.textColor)
             binding.main.setOnClickListener {
                 listener?.onSliceClick(position, item)
             }

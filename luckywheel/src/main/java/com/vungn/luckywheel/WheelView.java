@@ -79,7 +79,7 @@ final class WheelView extends View {
      *
      * @param wheelBackground Wheel background color
      */
-    public void setWheelBackgoundWheel(int wheelBackground) {
+    public void setWheelBackgroundWheel(int wheelBackground) {
         this.wheelBackground = wheelBackground;
         invalidate();
     }
@@ -229,8 +229,9 @@ final class WheelView extends View {
      * @param tempAngle  Temporary angle
      * @param sweepAngle current index angle
      * @param text       string to show
+     * @param textColor  text color
      */
-    private void drawText(Canvas canvas, float tempAngle, float sweepAngle, String text) {
+    private void drawText(Canvas canvas, float tempAngle, float sweepAngle, String text, int textColor) {
         canvas.rotate((tempAngle + sweepAngle / 2 + 180), center, center);
         Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
         float textHeight = fontMetrics.descent - fontMetrics.ascent;
@@ -251,6 +252,7 @@ final class WheelView extends View {
         float rectBottom = center + textHeight / 2;
         path.addRect(rectLeft, rectTop, rectRight, rectBottom, Path.Direction.CW);
         path.computeBounds(bounds, true);
+        textPaint.setColor(textColor);
         canvas.drawTextOnPath(text, path, 0, textHeight - 10, textPaint);
         canvas.rotate(-(tempAngle + sweepAngle / 2 + 180), center, center);
     }
@@ -357,7 +359,7 @@ final class WheelView extends View {
         for (int i = 0; i < wheelItems.size(); i++) {
             archPaint.setColor(wheelItems.get(i).getBackgroundColor());
             canvas.drawArc(range, tempAngle, sweepAngle, true, archPaint);
-            drawText(canvas, tempAngle, sweepAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText());
+            drawText(canvas, tempAngle, sweepAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText(), wheelItems.get(i).getTextColor());
             tempAngle += sweepAngle;
         }
         drawShadow(canvas);

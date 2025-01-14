@@ -156,7 +156,7 @@ lw.rotateWheelTo(randomNum)
 | Padding between text and edge | `LuckyWheel:text_padding` | `setTextPadding()` | `0` |
 | Text size | `LuckyWheel:text_size` | `setTextSize()` | `15sp`|
 | Text color | `LuckyWheel:text_color` | `setTextColor()` | `Color.WHITE` |
-| Font family | `LuckyWheel:font_family` | `setFontFamily() | `None` |
+| Font family | `LuckyWheel:font_family` | `setFontFamily()` | `None` |
 
 ## Support and Contributions
 Support it by joining [stargazers](https://github.com/VuNgN/EasyAdMob/stargazers) for this repository. ⭐</br>

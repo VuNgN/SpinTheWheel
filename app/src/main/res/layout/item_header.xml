@@ -14,9 +14,7 @@
         android:layout_gravity="center"
         LuckyWheel:background_color="@color/colorPrimary"
         LuckyWheel:font_family="@font/roboto_bold"
-        LuckyWheel:text_color="#FFFFFF"
-        LuckyWheel:text_padding="10dp"
-        LuckyWheel:text_size="20sp" />
+        LuckyWheel:text_padding="10dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

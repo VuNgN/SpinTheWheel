@@ -2,9 +2,12 @@ package com.vungn.luckywheel;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -64,10 +67,10 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             int arrowImage = typedArray.getResourceId(R.styleable.LuckyWheel_arrow_image, R.drawable.ig_arrow);
             int imagePadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_image_padding, 0);
             int textPadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_padding, 0);
-            int textSize = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_size, 60);
+            int textSize = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_size, getDpOf(15));
             int textColor = typedArray.getColor(R.styleable.LuckyWheel_text_color, Color.WHITE);
             int fontFamily = typedArray.getResourceId(R.styleable.LuckyWheel_font_family, 0);
-            wheelView.setWheelBackgoundWheel(backgroundColor);
+            wheelView.setWheelBackgroundWheel(backgroundColor);
             wheelView.setItemsImagePadding(imagePadding);
             wheelView.setItemsTextPadding(textPadding);
             wheelView.setItemsTextSize(textSize);
@@ -87,6 +90,60 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
      */
     public void setLuckyWheelReachTheTarget(OnLuckyWheelReachTheTarget onLuckyWheelReachTheTarget) {
         wheelView.setWheelListener(onLuckyWheelReachTheTarget);
+    }
+
+    /**
+     * Function to set background color of wheel
+     *
+     * @param backgroundColor background color
+     */
+    public void setWheelBackgroundColor(int backgroundColor) {
+        wheelView.setWheelBackgroundWheel(backgroundColor);
+    }
+
+    /**
+     * Function to set arrow image of wheel by resource
+     *
+     * @param arrowImage arrow image
+     */
+    public void setArrowImage(int arrowImage) {
+        arrow.setImageResource(arrowImage);
+    }
+
+    /**
+     * Function to set arrow image of wheel by drawable
+     *
+     * @param arrowImage arrow image
+     */
+    public void setArrowImage(Drawable arrowImage) {
+        arrow.setImageDrawable(arrowImage);
+    }
+
+    /**
+     * Function to set arrow image of wheel by bitmap
+     *
+     * @param arrowImage arrow image
+     */
+    public void setArrowImage(Bitmap arrowImage) {
+        arrow.setImageBitmap(arrowImage);
+    }
+
+    /**
+     * Function to set text padding of wheel items
+     *
+     * @param textPadding text padding
+     */
+    public void setTextPadding(int textPadding) {
+        wheelView.setItemsTextPadding(textPadding);
+    }
+
+    /**
+     * Function to set text color of wheel items
+     *
+     * @param textColor text color
+     */
+    public void setTextColor(int textColor) {
+        wheelView.setItemsTextColor(textColor);
     }
 
     /**
@@ -199,5 +256,13 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     @Override
     public void onFinishRotation() {
         isRotate = false;
+    }
+
+    private int getDpOf(int value) {
+        return Math.round(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics()
+                )
+        );
     }
 }
