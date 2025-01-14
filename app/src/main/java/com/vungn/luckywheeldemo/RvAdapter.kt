@@ -16,6 +16,11 @@ import com.vungn.luckywheeldemo.databinding.ItemSliceBinding
 
 class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var _listener: Listener? = null
+    private var _textSize: Int? = null
+    private var _sliceRepeat: Int? = null
+    private var _spinTime: SpinTime? = null
+    private var _autoHide: Boolean? = null
+
     var listener: Listener?
         get() = _listener
         set(value) {
@@ -47,13 +52,14 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class HeaderViewHolder(private val binding: ItemHeaderBinding) :
+    inner class HeaderViewHolder(private val binding: ItemHeaderBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private var wheelItems: List<WheelItem> = emptyList()
         private val lw: LuckyWheel = binding.lwv
 
         fun bind(items: List<WheelItem>, listener: Listener? = null) {
             wheelItems = items
+            binding.swAutoHide.isChecked = _autoHide ?: false
             if (wheelItems.size <= 2) {
                 binding.swAutoHide.isChecked = false
                 binding.swAutoHide.isEnabled = false
@@ -66,6 +72,9 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             setupSpinTime()
             binding.btnAddItem.setOnClickListener {
                 listener?.onAddItemClick()
+            }
+            binding.swAutoHide.setOnCheckedChangeListener { _, isChecked ->
+                _autoHide = isChecked
             }
         }
 
@@ -93,15 +102,28 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun setupTextSize() {
             val textSizeTextView = binding.tvTextSize
-            textSizeTextView.text = "15"
-            var px = Math.round(
-                TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP, (15).toFloat(), itemView.resources.displayMetrics
+            var px = if (_textSize == null) {
+                textSizeTextView.text = "15"
+                Math.round(
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        (15).toFloat(),
+                        itemView.resources.displayMetrics
+                    )
                 )
-            )
+            } else {
+                textSizeTextView.text = _textSize.toString()
+                Math.round(
+                    TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        (_textSize!!).toFloat(),
+                        itemView.resources.displayMetrics
+                    )
+                )
+            }
             lw.setTextSize(px)
             binding.sbTextSize.apply {
-                progress = 2
+                progress = _textSize?.minus(12) ?: 2
                 max = 8
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
@@ -122,6 +144,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
                         lw.setTextSize(px)
+                        _textSize = progress + 12
                     }
                 })
             }
@@ -129,10 +152,15 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun setupSliceRepeat() {
             val sliceRepeatTextView = binding.tvSliceRepeat
-            sliceRepeatTextView.text = "1"
-            lw.setSliceRepeat(1)
+            if (_sliceRepeat != null) {
+                lw.setSliceRepeat(_sliceRepeat!!)
+                sliceRepeatTextView.text = _sliceRepeat.toString()
+            } else {
+                lw.setSliceRepeat(1)
+                sliceRepeatTextView.text = "1"
+            }
             binding.sbSliceRepeat.apply {
-                progress = 0
+                progress = _sliceRepeat?.minus(1) ?: 0
                 max = 1
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
@@ -146,6 +174,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
                         lw.setSliceRepeat(progress + 1)
+                        _sliceRepeat = progress + 1
                     }
                 })
             }
@@ -153,9 +182,19 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun setupSpinTime() {
             val spinTimeTextView = binding.tvSpinTime
-            spinTimeTextView.text = "3x"
+            if (_spinTime != null) {
+                lw.setSpinTime(_spinTime!!)
+                spinTimeTextView.text = "${_spinTime!!.ordinal + 1}x"
+            } else {
+                lw.setSpinTime(SpinTime.X3)
+                spinTimeTextView.text = "3x"
+            }
             binding.sbSpinTime.apply {
-                progress = 1
+                progress = if (_spinTime != null) {
+                    SpinTime.entries.indexOf(_spinTime) - 1
+                } else {
+                    SpinTime.entries.indexOf(SpinTime.X3) - 1
+                }
                 max = 4
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
@@ -169,6 +208,7 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     override fun onStopTrackingTouch(seekBar: SeekBar?) {
                         lw.setSpinTime(SpinTime.entries[progress])
+                        _spinTime = SpinTime.entries[progress]
                     }
                 })
             }
@@ -181,10 +221,6 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val randomNum = WheelUtils.getRandomIndex(wheelItems)
             Log.d(TAG, "onCreate: $randomNum")
             lw.rotateWheelTo(randomNum)
-        }
-
-        companion object {
-            private const val TAG = "RvAdapter"
         }
     }
 
@@ -234,5 +270,6 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_HEADER = 0
         private const val TYPE_ITEM = 1
+        private const val TAG = "RvAdapter"
     }
 }
