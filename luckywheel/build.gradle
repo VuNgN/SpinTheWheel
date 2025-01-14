@@ -1,23 +1,69 @@
+apply plugin: 'maven-publish'
 apply plugin: 'com.android.library'
 
 android {
     namespace "com.vungn.luckywheel"
-
     compileSdkVersion 34
-
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    group = 'com.vungn.luckywheel'
+    version = '1.0.0'
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.vungn.luckywheel'
+                artifactId = 'luckywheel'
+                version = '1.0.0'
+                pom {
+                    name = 'Spin The Wheel'
+                    description = 'A simple library to create a lucky wheel in Android'
+                    url = 'https://github.com/VuNgN/SpinTheWheel'
+                    licenses {
+                        license {
+                            name = 'The VuNgN License, Version 1.0'
+                            url = 'https://github.com/VuNgN/License/blob/license/LICENSE.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'VuNgN'
+                            name = 'Nguyễn Ngọc Vũ'
+                            email = 'vu.nguyeenngoc@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = 'GitHubPackages'
+                url = uri(layout.buildDirectory.dir('repo'))
+            }
         }
     }
 }
