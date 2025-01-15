@@ -103,12 +103,37 @@ class MainActivity : AppCompatActivity() {
     private fun generateWheelItems() {
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#F8C448"), Color.parseColor("#FFFFFF"), "100 $"
+                Color.parseColor("#6EAF62"), Color.parseColor("#FFFFFF"), "100 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#39A1E8"), Color.parseColor("#FFFFFF"), "2 $"
+                Color.parseColor("#5BBBD2"), Color.parseColor("#FFFFFF"), "2 $"
+            )
+        )
+        wheelItems.add(
+            WheelItem(
+                Color.parseColor("#5399EC"), Color.parseColor("#FFFFFF"), "3000 $"
+            )
+        )
+        wheelItems.add(
+            WheelItem(
+                Color.parseColor("#6D4CB6"), Color.parseColor("#FFFFFF"), "40 $"
+            )
+        )
+        wheelItems.add(
+            WheelItem(
+                Color.parseColor("#D84E6F"), Color.parseColor("#FFFFFF"), "50000 $"
+            )
+        )
+        wheelItems.add(
+            WheelItem(
+                Color.parseColor("#ED7242"), Color.parseColor("#FFFFFF"), "6000000000 $"
+            )
+        )
+        wheelItems.add(
+            WheelItem(
+                Color.parseColor("#F4C647"), Color.parseColor("#FFFFFF"), "700000 $"
             )
         )
     }

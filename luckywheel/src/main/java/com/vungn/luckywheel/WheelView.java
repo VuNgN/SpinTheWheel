@@ -3,7 +3,6 @@ package com.vungn.luckywheel;
 import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -29,12 +28,13 @@ import java.util.List;
 final class WheelView extends View {
     public static final int DEFAULT_TEXT_SIZE = 60;
     private RectF range = new RectF();
-    private Paint archPaint, textPaint;
+    private Paint archPaint, textPaint, backgroundPaint;
     @ColorInt
     private int textColor = Color.parseColor("#FFFFFF");
     private int textSize = DEFAULT_TEXT_SIZE;
     private int rotateTime = SpinTime.X3.value;
-    private int padding, radius, center, wheelBackground, imagePadding, textPadding;
+    private int padding, radius, center, wheelBorderColor, imagePadding, textPadding;
+    private Bitmap shadow;
     private Typeface fontFamily;
     private List<WheelItem> wheelItems;
     private List<WheelItem> wheelItemsOriginal;
@@ -61,6 +61,11 @@ final class WheelView extends View {
         textPaint.setDither(true);
         textPaint.setTextSize(textSize);
         textPaint.setTypeface(fontFamily);
+        //background paint object
+        backgroundPaint = new Paint();
+        backgroundPaint.setAntiAlias(true);
+        backgroundPaint.setDither(true);
+
         //rect rang of the arc
         range = new RectF(padding, padding, padding + radius, padding + radius);
     }
@@ -77,10 +82,30 @@ final class WheelView extends View {
     /**
      * Function to set wheel background
      *
-     * @param wheelBackground Wheel background color
+     * @param color Wheel background color
      */
-    public void setWheelBackgroundWheel(int wheelBackground) {
-        this.wheelBackground = wheelBackground;
+    public void setBorder(int color) {
+        this.wheelBorderColor = color;
+        invalidate();
+    }
+
+    /**
+     * Function to set padding of the wheel
+     *
+     * @param padding Padding of the wheel
+     */
+    public void setPadding(int padding) {
+        this.padding = padding;
+        invalidate();
+    }
+
+    /**
+     * Function to set shadow of the wheel
+     *
+     * @param shadow Shadow of the wheel
+     */
+    public void setShadow(Bitmap shadow) {
+        this.shadow = shadow;
         invalidate();
     }
 
@@ -188,11 +213,8 @@ final class WheelView extends View {
      * @param canvas Canvas of draw
      */
     private void drawWheelBackground(Canvas canvas) {
-        Paint backgroundPainter = new Paint();
-        backgroundPainter.setAntiAlias(true);
-        backgroundPainter.setDither(true);
-        backgroundPainter.setColor(wheelBackground);
-        canvas.drawCircle(center, center, center, backgroundPainter);
+        backgroundPaint.setColor(wheelBorderColor);
+        canvas.drawCircle(center, center, center, backgroundPaint);
     }
 
     /**
@@ -263,8 +285,10 @@ final class WheelView extends View {
      * @param canvas Canvas to draw
      */
     private void drawShadow(Canvas canvas) {
-        Bitmap shadow = BitmapFactory.decodeResource(getResources(), R.drawable.ig_shadow);
-        Rect rect = new Rect(padding - 2, padding - 2, radius + padding, radius + padding);
+        if (shadow == null) {
+            return;
+        }
+        Rect rect = new Rect(padding, padding, radius + padding, radius + padding);
         Bitmap scaledShadow = Bitmap.createScaledBitmap(shadow, rect.width(), rect.height(), true);
         canvas.drawBitmap(scaledShadow, null, rect, new Paint());
     }
@@ -352,8 +376,8 @@ final class WheelView extends View {
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        drawWheelBackground(canvas);
         initComponents();
+        drawWheelBackground(canvas);
         float tempAngle = 0;
         float sweepAngle = (float) 360 / wheelItems.size();
         for (int i = 0; i < wheelItems.size(); i++) {
@@ -370,8 +394,6 @@ final class WheelView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int width = Math.min(getMeasuredWidth(), getMeasuredHeight());
-        int DEFAULT_PADDING = 40;
-        padding = getPaddingLeft() == 0 ? DEFAULT_PADDING : getPaddingLeft();
         radius = width - padding * 2;
         center = width / 2;
         setMeasuredDimension(width, width);

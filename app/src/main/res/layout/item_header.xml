@@ -12,7 +12,11 @@
         android:layout_width="400dp"
         android:layout_height="400dp"
         android:layout_gravity="center"
-        LuckyWheel:background_color="@color/colorPrimary"
+        android:background="@drawable/ig_edge_1"
+        LuckyWheel:arrow_image="@drawable/ig_arrow_1"
+        LuckyWheel:shadow_src="@drawable/ig_shadow_1"
+        LuckyWheel:border_color="#33FFFFFF"
+        LuckyWheel:border_width="30dp"
         LuckyWheel:font_family="@font/roboto_bold"
         LuckyWheel:text_padding="10dp" />
 
