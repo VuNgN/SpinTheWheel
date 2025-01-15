@@ -29,8 +29,6 @@ final class WheelView extends View {
     public static final int DEFAULT_TEXT_SIZE = 60;
     private RectF range = new RectF();
     private Paint archPaint, textPaint, backgroundPaint;
-    @ColorInt
-    private int textColor = Color.parseColor("#FFFFFF");
     private int textSize = DEFAULT_TEXT_SIZE;
     private int rotateTime = SpinTime.X3.value;
     private int padding, radius, center, wheelBorderColor, imagePadding, textPadding;
@@ -56,7 +54,6 @@ final class WheelView extends View {
         archPaint.setDither(true);
         //text paint object
         textPaint = new Paint();
-        textPaint.setColor(textColor);
         textPaint.setAntiAlias(true);
         textPaint.setDither(true);
         textPaint.setTextSize(textSize);
@@ -136,16 +133,6 @@ final class WheelView extends View {
      */
     public void setItemsTextSize(int textSize) {
         this.textSize = textSize;
-        postInvalidate();
-    }
-
-    /**
-     * Function to set items text color
-     *
-     * @param textColor Text color
-     */
-    public void setItemsTextColor(int textColor) {
-        this.textColor = textColor;
         postInvalidate();
     }
 

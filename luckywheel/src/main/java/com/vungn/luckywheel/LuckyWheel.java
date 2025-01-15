@@ -71,7 +71,6 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             int imagePadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_image_padding, 0);
             int textPadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_padding, 0);
             int textSize = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_size, getDpOf(15));
-            int textColor = typedArray.getColor(R.styleable.LuckyWheel_text_color, Color.WHITE);
             int fontFamily = typedArray.getResourceId(R.styleable.LuckyWheel_font_family, 0);
             wheelView.setBorder(borderColor);
             wheelView.setPadding(borderWidth);
@@ -79,7 +78,6 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             wheelView.setItemsImagePadding(imagePadding);
             wheelView.setItemsTextPadding(textPadding);
             wheelView.setItemsTextSize(textSize);
-            wheelView.setItemsTextColor(textColor);
             wheelView.setItemsFontFamily(ResourcesCompat.getFont(getContext(), fontFamily));
             arrow.setImageResource(arrowImage);
         } catch (Exception e) {
@@ -167,15 +165,6 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
      */
     public void setTextPadding(int textPadding) {
         wheelView.setItemsTextPadding(textPadding);
-    }
-
-    /**
-     * Function to set text color of wheel items
-     *
-     * @param textColor text color
-     */
-    public void setTextColor(int textColor) {
-        wheelView.setItemsTextColor(textColor);
     }
 
     /**

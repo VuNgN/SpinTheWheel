@@ -21,8 +21,8 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
    - [Gradle](#gradle)
    - [Maven](#maven)
 5. [Usage](#usage)
-   - [XML Layout](#in-the-layout)
-   - [Code Integration](#in-code)
+   - [Wheel View](#wheel-view)
+   - [Wheel Item (slice)](#wheel-item-slice)
    - [Anatomy and Key Properties](#anatomy-and-key-properties)
 6. [Support and Contributions](#support-and-contributions)
 7. [License](#license)
@@ -100,6 +100,8 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 
 ## Usage
 
+### Wheel View
+
 In the layout:
 
 ```xml
@@ -149,7 +151,46 @@ val randomNum = WheelUtils.getRandomIndex(wheelItems)
 lw.rotateWheelTo(randomNum)
 ```
 
-**Note** I recommend using the `WheelUtils.getRandomIndex(wheelItems)` method to get random number for the target. If not, you need to calculate the total number of slices including the total probability of each slice. To get the total probability, use the `WheelUtils.calculateTotalProbability(wheelItems)` method.
+>**Note**: I recommend using the `WheelUtils.getRandomIndex(wheelItems)` method to get random number for the target. If not, you need to calculate the total number of slices including the total probability of each slice. To get the total probability, use the `WheelUtils.calculateTotalProbability(wheelItems)` method.
+
+#### Methods
+
+| Method | Input                                                                                     | Description                                                                  |
+| ------------- |-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| `addWheelItems()` | `List<WheelItem>`                                                                         | Add items to the wheel view.                                                 |
+| `setLuckyWheelReachTheTarget()` | `OnLuckyWheelReachTheTargeto`                                                             | Listen for the finish event when the target item is reached.                 |
+| `setListener()` | `WheelListener`                                                                           | Listen for action events like sliding the wheel or touching the spin button. |
+| `rotateWheelTo()` | `Int`                                                                                     | Start spinning the wheel to the target index.                                |
+| `resetWheel()` | `None`                                                                                    | Reset the wheel to the initial state.                                        |
+| `setSliceRepeat()` | `Int`                                                                                     | Set the number of times to repeat slices alternately                         |
+| `setSpinTime()` | `Int`: time in millisecond</br>`SpinTime`: default values                                 | Set the duration of the spinning animation.                                  |
+| `setWheelBorder()` | `Int`                                                                                     | Set the border color.                                                        |
+| `setWheelPadding()` | `Int`                                                                                     | Set the border width.                                                        |
+| `setWheelShadow()` | `Int`: resource of image</br> `Bitmap`: bitmap of image                                   | Set the shadow image.                                                        |
+| `setArrowImage()` | `Int`: resource of image</br> `Bitmap`: bitmap of image</br>`Drawable`: drawable of image | Set the arrow image.                                                         |
+| `setTextPadding()` | `Int`                                                                                     | Set the padding between text and edge for all slices.                        |
+| `setTextSize()` | `Float`                                                                                   | Set text size for all slices.                                                |
+| `setFontFamily()` | `Int`: resource of font                                                                   | Set the font family for all slices.                                          |
+
+### Wheel Item (slice)
+
+```kotlin
+val item = WheelItem(
+  text = "Item 1",
+  textColor = Color.WHITE,
+  backgroundColor = Color.RED,
+  probability = 1
+)
+```
+
+#### Key properties
+
+| Property | Type     | Description |
+| ------------- |----------| ------------- |
+| `text` | `String` | Text to display on the slice. |
+| `textColor` | `Int`    | Color of the text. |
+| `backgroundColor` | `Int`    | Background color of the slice. |
+| `probability` | `Int`    | Probability of selected slice over total slices. |
 
 ### Anatomy and Key properties
 <img src="https://github.com/user-attachments/assets/0fa46a70-2940-474b-96bc-109c6b390e2b" alt="" width="600" height="300" /> 
@@ -169,7 +210,6 @@ lw.rotateWheelTo(randomNum)
 | Arrow image | `LuckyWheel:arrow_image` | `setArrowImage()` | <img src="https://github.com/user-attachments/assets/dad494a5-25eb-4272-89e1-9582427d688e" alt="" width="40" height="50" />  |
 | Padding between text and edge | `LuckyWheel:text_padding` | `setTextPadding()` | `0` |
 | Text size | `LuckyWheel:text_size` | `setTextSize()` | `15sp`|
-| Text color | `LuckyWheel:text_color` | `setTextColor()` | `Color.WHITE` |
 | Font family | `LuckyWheel:font_family` | `setFontFamily()` | `None` |
 
 ## Support and Contributions

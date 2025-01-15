@@ -9,7 +9,6 @@
         <attr name="image_padding" format="dimension" />
         <attr name="text_padding" format="dimension" />
         <attr name="text_size" format="dimension" />
-        <attr name="text_color" format="color" />
         <attr name="font_family" format="reference" />
     </declare-styleable>
 </resources>
