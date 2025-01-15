@@ -28,8 +28,10 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 7. [License](#license)
 
 ## Example
-| <img src="https://github.com/user-attachments/assets/24ff951f-e324-499f-9364-96abe5a3bee7" alt="" width="200" height="440" /> | <img src="https://github.com/user-attachments/assets/fac96e86-0a94-4acf-9e42-986d8c71ae9a" alt="" width="200" height="440" /> | <img src="https://github.com/user-attachments/assets/f50cd4b3-ff3e-4b13-b4d6-0e9c54b47290" alt="" width="200" height="440" /> |
-| ------------- | ------------- | ------------ |
+
+| <img src="https://github.com/user-attachments/assets/f35e1e7b-3c53-4a48-8eaf-3eaba3c2bdf7" alt="" width="300" height="300" /> | <img src="https://github.com/user-attachments/assets/22a04eed-7319-4cae-99de-6ba7008a16c9" alt="" width="300" height="300" /> |
+| ------------- | ------------- |
+| <img src="https://github.com/user-attachments/assets/fb65920e-ad6f-4b12-85dc-9b467e53340d" alt="" width="300" height="300" /> | <img src="https://github.com/user-attachments/assets/cbf1810f-9f78-4ba1-b054-8933ee7acf92" alt="" width="300" height="300" /> |
 
 ## Installation
 
@@ -102,15 +104,17 @@ In the layout:
 
 ```xml
 <com.vungn.luckywheel.LuckyWheel
-    android:id="@+id/lwv"
-    android:layout_width="400dp"
-    android:layout_height="400dp"
-    android:layout_gravity="center"
-    LuckyWheel:background_color="@color/colorPrimary"
-    LuckyWheel:font_family="@font/roboto_bold"
-    LuckyWheel:text_color="#FFFFFF"
-    LuckyWheel:text_padding="10dp"
-    LuckyWheel:text_size="20sp" />
+android:id="@+id/lwv"
+android:layout_width="400dp"
+android:layout_height="400dp"
+android:layout_gravity="center"
+android:background="@drawable/ig_edge_1"
+LuckyWheel:arrow_image="@drawable/ig_arrow_1"
+LuckyWheel:shadow_src="@drawable/ig_shadow_1"
+LuckyWheel:border_color="#33FFFFFF"
+LuckyWheel:border_width="30dp"
+LuckyWheel:font_family="@font/roboto_bold"
+LuckyWheel:text_padding="10dp" />
 ```
 
 In code:
@@ -148,17 +152,20 @@ lw.rotateWheelTo(randomNum)
 **Note** I recommend using the `WheelUtils.getRandomIndex(wheelItems)` method to get random number for the target. If not, you need to calculate the total number of slices including the total probability of each slice. To get the total probability, use the `WheelUtils.calculateTotalProbability(wheelItems)` method.
 
 ### Anatomy and Key properties
-<img src="https://github.com/user-attachments/assets/79d6cad2-ec37-4cd2-8538-ba8e8b1b029d" alt="" width="600" height="300" /> 
+<img src="https://github.com/user-attachments/assets/0fa46a70-2940-474b-96bc-109c6b390e2b" alt="" width="600" height="300" /> 
 
-1. Arrow
-2. Slice
-3. Text
-4. Background
+1. Border
+2. Arrow
+3. Shadow
+4. Slice
+5. Text
 
 #### Container attributes
 | Element     | Attribute     | Related method(s) | Default value |
 | ------------- | ------------- | ------------- | -------------- |
-| Background color | `LuckyWheel:background_color` | `setWheelBackgroundColor()` | `None` |
+| Border color | `LuckyWheel:border_color` | `setWheelBorder()` | `Color.TRANSPARENT` |
+| Border width | `LuckyWheel:border_width` | `setWheelPadding()` | `None` |
+| Shadow | `LuckyWheel:shadow_src` | `setWheelShadow()` | `None` |
 | Arrow image | `LuckyWheel:arrow_image` | `setArrowImage()` | <img src="https://github.com/user-attachments/assets/dad494a5-25eb-4272-89e1-9582427d688e" alt="" width="40" height="50" />  |
 | Padding between text and edge | `LuckyWheel:text_padding` | `setTextPadding()` | `0` |
 | Text size | `LuckyWheel:text_size` | `setTextSize()` | `15sp`|
