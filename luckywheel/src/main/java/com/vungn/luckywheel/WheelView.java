@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -15,7 +14,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -32,11 +30,15 @@ final class WheelView extends View {
     private int textSize = DEFAULT_TEXT_SIZE;
     private int rotateTime = SpinTime.X3.value;
     private int padding, radius, center, wheelBorderColor, imagePadding, textPadding;
+    @Nullable
     private Bitmap shadow;
+    @Nullable
     private Typeface fontFamily;
     private List<WheelItem> wheelItems;
     private List<WheelItem> wheelItemsOriginal;
+    @Nullable
     private OnLuckyWheelReachTheTarget onLuckyWheelReachTheTarget;
+    @Nullable
     private OnRotationListener onRotationListener;
 
     public WheelView(Context context, @Nullable AttributeSet attrs) {
@@ -179,7 +181,7 @@ final class WheelView extends View {
      *
      * @param onRotationListener Rotation listener
      */
-    public void setOnRotationListener(OnRotationListener onRotationListener) {
+    public void setOnRotationListener(@Nullable OnRotationListener onRotationListener) {
         this.onRotationListener = onRotationListener;
     }
 

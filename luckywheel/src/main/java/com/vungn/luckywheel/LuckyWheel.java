@@ -29,6 +29,7 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     private WheelView wheelView;
     private ImageView arrow;
     private boolean isRotate = false;
+    @Nullable
     private WheelListener listener;
 
     public LuckyWheel(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -49,7 +50,11 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
         wheelView = findViewById(R.id.wv_main_wheel);
         wheelView.setOnRotationListener(this);
         arrow = findViewById(R.id.iv_arrow);
-        arrow.setOnClickListener(v -> listener.onTouchTheSpin());
+        arrow.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onTouchTheSpin();
+            }
+        });
     }
 
     /**
@@ -295,10 +300,14 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
                 dy = y2 - y1;
                 if (Math.abs(dx) > Math.abs(dy)) {
                     if (dx < 0 && Math.abs(dx) > SWIPE_DISTANCE_THRESHOLD)
-                        listener.onSlideTheWheel();
+                        if (listener != null) {
+                            listener.onSlideTheWheel();
+                        }
                 } else {
                     if (dy > 0 && Math.abs(dy) > SWIPE_DISTANCE_THRESHOLD)
-                        listener.onSlideTheWheel();
+                        if (listener != null) {
+                            listener.onSlideTheWheel();
+                        }
                 }
                 break;
             default:
