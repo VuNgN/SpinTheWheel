@@ -105,18 +105,20 @@ Whether you're building a game of chance, a prize wheel, or a fun decision-makin
 In the layout:
 
 ```xml
-<com.vungn.luckywheel.LuckyWheel
-   android:id="@+id/lwv"
-   android:layout_width="400dp"
-   android:layout_height="400dp"
-   android:layout_gravity="center"
-   android:background="@drawable/ig_edge_1"
-   app:arrow_image="@drawable/ig_arrow_1"
-   app:shadow_src="@drawable/ig_shadow_1"
-   app:border_color="#33FFFFFF"
-   app:border_width="30dp"
-   app:font_family="@font/roboto_bold"
-   app:text_padding="10dp" />
+<com.vungn.luckywheel.LuckyWheel 
+    android:id="@+id/lwv"
+    android:layout_width="400dp"
+    android:layout_height="400dp"
+    android:layout_gravity="center"
+    android:background="@drawable/ig_edge_1" 
+    app:arrow_height="50dp" 
+    app:arrow_width="50dp" 
+    app:arrow_image="@drawable/ig_arrow_1"
+    app:shadow_src="@drawable/ig_shadow_1"
+    app:border_color="#33FFFFFF"
+    app:border_width="30dp"
+    app:font_family="@font/roboto_bold"
+    app:text_padding="10dp" />
 ```
 
 In code:
@@ -168,6 +170,9 @@ lw.rotateWheelTo(randomNum)
 | `setWheelPadding()` | `Int`                                                                                     | Set the border width.                                                        |
 | `setWheelShadow()` | `Int`: resource of image</br> `Bitmap`: bitmap of image                                   | Set the shadow image.                                                        |
 | `setArrowImage()` | `Int`: resource of image</br> `Bitmap`: bitmap of image</br>`Drawable`: drawable of image | Set the arrow image.                                                         |
+| `setArrowWidth()` | `Int`                                                                                     | Set the width of the arrow.                                                  |
+| `setArrowHeight()` | `Int`                                                                                     | Set the height of the arrow.                                                 |
+| `setArrowSize()` | (`Int`, `Int`): width, height                                                             | Set the size of the arrow.                                                   |
 | `setTextPadding()` | `Int`                                                                                     | Set the padding between text and edge for all slices.                        |
 | `setTextSize()` | `Float`                                                                                   | Set text size for all slices.                                                |
 | `setFontFamily()` | `Int`: resource of font                                                                   | Set the font family for all slices.                                          |
@@ -208,6 +213,8 @@ val item = WheelItem(
 | Border width | `app:border_width` | `setWheelPadding()` | `None` |
 | Shadow | `app:shadow_src` | `setWheelShadow()` | `None` |
 | Arrow image | `app:arrow_image` | `setArrowImage()` | <img src="https://github.com/user-attachments/assets/dad494a5-25eb-4272-89e1-9582427d688e" alt="" width="40" height="50" />  |
+| Arrow width | `app:arrow_width` | `setArrowWidth()` | `50dp` |
+| Arrow height | `app:arrow_height` | `setArrowHeight()` | `50dp` |
 | Padding between text and edge | `app:text_padding` | `setTextPadding()` | `0` |
 | Text size | `app:text_size` | `setTextSize()` | `15sp`|
 | Font family | `app:font_family` | `setFontFamily()` | `None` |

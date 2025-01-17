@@ -5,6 +5,8 @@
         <attr name="border_width" format="dimension" />
         <attr name="shadow_src" format="reference" />
         <attr name="arrow_image" format="reference" />
+        <attr name="arrow_height" format="dimension" />
+        <attr name="arrow_width" format="dimension" />
         <attr name="square_layout" format="boolean" />
         <attr name="image_padding" format="dimension" />
         <attr name="text_padding" format="dimension" />

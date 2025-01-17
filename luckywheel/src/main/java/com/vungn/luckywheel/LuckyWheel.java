@@ -68,6 +68,8 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             int borderWidth = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_border_width, getDpOf(20));
             int shadowSrc = typedArray.getResourceId(R.styleable.LuckyWheel_shadow_src, 0);
             int arrowImage = typedArray.getResourceId(R.styleable.LuckyWheel_arrow_image, R.drawable.ig_arrow);
+            int arrowWidth = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_arrow_width, getDpOf(50));
+            int arrowHeight = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_arrow_height, getDpOf(50));
             int imagePadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_image_padding, 0);
             int textPadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_padding, 0);
             int textSize = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_size, getDpOf(15));
@@ -80,6 +82,8 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             wheelView.setItemsTextSize(textSize);
             wheelView.setItemsFontFamily(ResourcesCompat.getFont(getContext(), fontFamily));
             arrow.setImageResource(arrowImage);
+            arrow.getLayoutParams().width = arrowWidth;
+            arrow.getLayoutParams().height = arrowHeight;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -156,6 +160,35 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
      */
     public void setArrowImage(Bitmap arrowImage) {
         arrow.setImageBitmap(arrowImage);
+    }
+
+    /**
+     * Function to set arrow width of wheel
+     *
+     * @param width arrow width
+     */
+    public void setArrowWidth(int width) {
+        arrow.getLayoutParams().width = width;
+    }
+
+    /**
+     * Function to set arrow height of wheel
+     *
+     * @param height arrow height
+     */
+    public void setArrowHeight(int height) {
+        arrow.getLayoutParams().height = height;
+    }
+
+    /**
+     * Function to set arrow size of wheel
+     *
+     * @param width  arrow width
+     * @param height arrow height
+     */
+    public void setArrowSize(int width, int height) {
+        arrow.getLayoutParams().width = width;
+        arrow.getLayoutParams().height = height;
     }
 
     /**

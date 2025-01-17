@@ -13,11 +13,13 @@
         android:layout_height="400dp"
         android:layout_gravity="center"
         android:background="@drawable/ig_edge_1"
+        LuckyWheel:arrow_height="50dp"
+        LuckyWheel:arrow_width="50dp"
         LuckyWheel:arrow_image="@drawable/ig_arrow_1"
-        LuckyWheel:shadow_src="@drawable/ig_shadow_1"
         LuckyWheel:border_color="#33FFFFFF"
         LuckyWheel:border_width="30dp"
         LuckyWheel:font_family="@font/roboto_bold"
+        LuckyWheel:shadow_src="@drawable/ig_shadow_1"
         LuckyWheel:text_padding="10dp" />
 
     <LinearLayout
