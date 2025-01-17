@@ -106,17 +106,17 @@ In the layout:
 
 ```xml
 <com.vungn.luckywheel.LuckyWheel
-android:id="@+id/lwv"
-android:layout_width="400dp"
-android:layout_height="400dp"
-android:layout_gravity="center"
-android:background="@drawable/ig_edge_1"
-LuckyWheel:arrow_image="@drawable/ig_arrow_1"
-LuckyWheel:shadow_src="@drawable/ig_shadow_1"
-LuckyWheel:border_color="#33FFFFFF"
-LuckyWheel:border_width="30dp"
-LuckyWheel:font_family="@font/roboto_bold"
-LuckyWheel:text_padding="10dp" />
+   android:id="@+id/lwv"
+   android:layout_width="400dp"
+   android:layout_height="400dp"
+   android:layout_gravity="center"
+   android:background="@drawable/ig_edge_1"
+   app:arrow_image="@drawable/ig_arrow_1"
+   app:shadow_src="@drawable/ig_shadow_1"
+   app:border_color="#33FFFFFF"
+   app:border_width="30dp"
+   app:font_family="@font/roboto_bold"
+   app:text_padding="10dp" />
 ```
 
 In code:
@@ -204,13 +204,13 @@ val item = WheelItem(
 #### Container attributes
 | Element     | Attribute     | Related method(s) | Default value |
 | ------------- | ------------- | ------------- | -------------- |
-| Border color | `LuckyWheel:border_color` | `setWheelBorder()` | `Color.TRANSPARENT` |
-| Border width | `LuckyWheel:border_width` | `setWheelPadding()` | `None` |
-| Shadow | `LuckyWheel:shadow_src` | `setWheelShadow()` | `None` |
-| Arrow image | `LuckyWheel:arrow_image` | `setArrowImage()` | <img src="https://github.com/user-attachments/assets/dad494a5-25eb-4272-89e1-9582427d688e" alt="" width="40" height="50" />  |
-| Padding between text and edge | `LuckyWheel:text_padding` | `setTextPadding()` | `0` |
-| Text size | `LuckyWheel:text_size` | `setTextSize()` | `15sp`|
-| Font family | `LuckyWheel:font_family` | `setFontFamily()` | `None` |
+| Border color | `app:border_color` | `setWheelBorder()` | `Color.TRANSPARENT` |
+| Border width | `app:border_width` | `setWheelPadding()` | `None` |
+| Shadow | `app:shadow_src` | `setWheelShadow()` | `None` |
+| Arrow image | `app:arrow_image` | `setArrowImage()` | <img src="https://github.com/user-attachments/assets/dad494a5-25eb-4272-89e1-9582427d688e" alt="" width="40" height="50" />  |
+| Padding between text and edge | `app:text_padding` | `setTextPadding()` | `0` |
+| Text size | `app:text_size` | `setTextSize()` | `15sp`|
+| Font family | `app:font_family` | `setFontFamily()` | `None` |
 
 ## Support and Contributions
 Support it by joining [stargazers](https://github.com/VuNgN/EasyAdMob/stargazers) for this repository. ⭐</br>
