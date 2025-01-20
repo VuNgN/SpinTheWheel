@@ -1,14 +1,17 @@
 package com.vungn.luckywheel;
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
  * Created by Vũ Nguyễn on 10/01/2025.
  */
 
-public class WheelItem {
+public class WheelItem implements Parcelable {
     private int backgroundColor;
     private int textColor;
     private Bitmap iconBitmap;
@@ -32,6 +35,26 @@ public class WheelItem {
         this.iconBitmap = iconBitmap;
         this.text = text;
     }
+
+    protected WheelItem(Parcel in) {
+        backgroundColor = in.readInt();
+        textColor = in.readInt();
+        iconBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        text = in.readString();
+        probability = in.readInt();
+    }
+
+    public static final Creator<WheelItem> CREATOR = new Creator<WheelItem>() {
+        @Override
+        public WheelItem createFromParcel(Parcel in) {
+            return new WheelItem(in);
+        }
+
+        @Override
+        public WheelItem[] newArray(int size) {
+            return new WheelItem[size];
+        }
+    };
 
     public int getBackgroundColor() {
         return backgroundColor;
@@ -80,5 +103,18 @@ public class WheelItem {
             return item.getBackgroundColor() == backgroundColor && item.getTextColor() == textColor && item.getText().equals(text) && item.getProbability() == probability;
         }
         return false;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeInt(backgroundColor);
+        dest.writeInt(textColor);
+        dest.writeString(text);
+        dest.writeInt(probability);
     }
 }

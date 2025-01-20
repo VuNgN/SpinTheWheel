@@ -365,17 +365,27 @@ final class WheelView extends View {
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        initComponents();
-        drawWheelBackground(canvas);
-        float tempAngle = 0;
-        float sweepAngle = (float) 360 / wheelItems.size();
-        for (int i = 0; i < wheelItems.size(); i++) {
-            archPaint.setColor(wheelItems.get(i).getBackgroundColor());
-            canvas.drawArc(range, tempAngle, sweepAngle, true, archPaint);
-            drawText(canvas, tempAngle, sweepAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText(), wheelItems.get(i).getTextColor());
-            tempAngle += sweepAngle;
+        try {
+            initComponents();
+            drawWheelBackground(canvas);
+            float tempAngle = 0;
+            float sweepAngle = (float) 360 / wheelItems.size();
+            for (int i = 0; i < wheelItems.size(); i++) {
+                archPaint.setColor(wheelItems.get(i).getBackgroundColor());
+                canvas.drawArc(range, tempAngle, sweepAngle, true, archPaint);
+                drawText(canvas, tempAngle, sweepAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText(), wheelItems.get(i).getTextColor());
+                tempAngle += sweepAngle;
+            }
+            drawShadow(canvas);
+        } catch (NullPointerException e) {
+            String message = "Wheel items is null, please add wheel items before draw";
+            throw new NullPointerException(message);
+        } catch (ArithmeticException e) {
+            String message = "Wheel items size is zero, please add wheel items before draw";
+            throw new ArithmeticException(message);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        drawShadow(canvas);
     }
 
     @Override
