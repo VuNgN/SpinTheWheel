@@ -1,6 +1,7 @@
 package com.vungn.luckywheel;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +12,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
@@ -24,12 +27,14 @@ import java.util.List;
  */
 
 final class WheelView extends View {
+    private static final String TAG = "WheelView";
     public static final int DEFAULT_TEXT_SIZE = 60;
+    private static final int UNAVAILABLE_ITEM_ALPHA = 51; // 20% transparent
     private RectF range = new RectF();
     private Paint archPaint, textPaint, backgroundPaint;
     private int textSize = DEFAULT_TEXT_SIZE;
     private int rotateTime = SpinTime.X3.value;
-    private int padding, radius, center, wheelBorderColor, imagePadding, textPadding;
+    private int padding, radius, center, wheelBorderColor, imagePadding, textPadding = 0;
     @Nullable
     private Bitmap shadow;
     @Nullable
@@ -40,6 +45,9 @@ final class WheelView extends View {
     private OnLuckyWheelReachTheTarget onLuckyWheelReachTheTarget;
     @Nullable
     private OnRotationListener onRotationListener;
+    @Nullable
+    private OnSliceClick onSliceClick;
+    private WheelMode wheelMode = WheelMode.NORMAL;
 
     public WheelView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -79,11 +87,29 @@ final class WheelView extends View {
     }
 
     /**
-     * Function to set wheel background
+     * Function to get wheel mode
+     *
+     * @return Wheel mode
+     */
+    public WheelMode getWheelMode() {
+        return wheelMode;
+    }
+
+    /**
+     * Function to set wheel mode
+     *
+     * @param wheelMode Wheel mode
+     */
+    public void setWheelMode(WheelMode wheelMode) {
+        this.wheelMode = wheelMode;
+    }
+
+    /**
+     * Function to set wheel background color
      *
      * @param color Wheel background color
      */
-    public void setBorder(int color) {
+    public void setWheelBackgroundColor(int color) {
         this.wheelBorderColor = color;
         invalidate();
     }
@@ -163,7 +189,8 @@ final class WheelView extends View {
      * @param sliceRepeat Slice repeat
      */
     public void setSliceRepeat(int sliceRepeat) {
-        this.wheelItems = WheelUtils.generateListBaseOnSliceRepeat(wheelItemsOriginal, sliceRepeat);
+        boolean isShowUnavailableItems = wheelMode == WheelMode.VISUAL;
+        this.wheelItems = WheelUtils.generateListBaseOnSliceRepeat(wheelItemsOriginal, sliceRepeat, isShowUnavailableItems);
         invalidate();
     }
 
@@ -186,13 +213,23 @@ final class WheelView extends View {
     }
 
     /**
+     * Function to set slice click listener
+     *
+     * @param onSliceClick Slice click listener
+     */
+    public void setOnSliceClick(@Nullable OnSliceClick onSliceClick) {
+        this.onSliceClick = onSliceClick;
+    }
+
+    /**
      * Function to add wheels items
      *
      * @param wheelItems Wheels model item
      */
     public void addWheelItems(List<WheelItem> wheelItems) {
+        boolean isShowUnavailableItems = wheelMode == WheelMode.VISUAL;
         this.wheelItemsOriginal = wheelItems;
-        this.wheelItems = WheelUtils.generateListBasedOnProbability(wheelItems);
+        this.wheelItems = WheelUtils.generateListBaseOnSliceRepeat(wheelItems, 1, isShowUnavailableItems);
         invalidate();
     }
 
@@ -203,7 +240,7 @@ final class WheelView extends View {
      */
     private void drawWheelBackground(Canvas canvas) {
         backgroundPaint.setColor(wheelBorderColor);
-        canvas.drawCircle(center, center, center, backgroundPaint);
+        canvas.drawCircle(center, center, center - padding, backgroundPaint);
     }
 
     /**
@@ -288,51 +325,62 @@ final class WheelView extends View {
      * @param target target number
      */
     public void rotateWheelToTarget(int target) {
+        setRotation(0);
         float targetAngle = getAngleOfIndexTarget(target);
         float sweepAngle = (float) 360 / wheelItems.size();
         float wheelItemCenter = (sweepAngle / 2 + 270) - targetAngle;
-        animate().setDuration(0).rotation(0).setListener(new Animator.AnimatorListener() {
+
+        final float startRotation = 0;
+        final float endRotation = (360 * 15) + wheelItemCenter;
+
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(rotateTime);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            private int lastTargetedIndex = -1;
+
             @Override
-            public void onAnimationStart(@NonNull Animator animation) {
+            public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                float fraction = animation.getAnimatedFraction();
+                float currentRotation = startRotation + (endRotation - startRotation) * fraction;
+//                Log.d(TAG, "onAnimationUpdate -> current:" + currentRotation);
+                setRotation(currentRotation);
+
+                // Calculate the current targeted slice
+                int currentTargetedIndex = calculateTargetedSliceIndex(currentRotation);
+                Log.d(TAG, "onAnimationUpdate: currentTargetedIndex -> " + currentTargetedIndex);
+                if (currentTargetedIndex != lastTargetedIndex && onLuckyWheelReachTheTarget != null) {
+                    onLuckyWheelReachTheTarget.onTargetChanged(wheelItems.get(currentTargetedIndex));
+                    lastTargetedIndex = currentTargetedIndex;
+                }
+            }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
             }
 
             @Override
-            public void onAnimationEnd(@NonNull Animator animation) {
-                animate().setInterpolator(new DecelerateInterpolator()).setDuration(rotateTime).rotation((360 * 15) + wheelItemCenter).setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(@NonNull Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(@NonNull Animator animation) {
-                        if (onLuckyWheelReachTheTarget != null) {
-                            onLuckyWheelReachTheTarget.onReachTarget(wheelItems.get(target));
-                        }
-                        if (onRotationListener != null) {
-                            onRotationListener.onFinishRotation();
-                        }
-                        clearAnimation();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(@NonNull Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(@NonNull Animator animation) {
-                    }
-                }).start();
+            public void onAnimationEnd(Animator animation) {
+                if (onLuckyWheelReachTheTarget != null) {
+                    Log.d(TAG, "onAnimationEnd: " + target);
+                    onLuckyWheelReachTheTarget.onReachFinalTarget(wheelItems.get(target));
+                }
+                if (onRotationListener != null) {
+                    onRotationListener.onFinishRotation();
+                }
                 clearAnimation();
             }
 
             @Override
-            public void onAnimationCancel(@NonNull Animator animation) {
+            public void onAnimationCancel(Animator animation) {
             }
 
             @Override
-            public void onAnimationRepeat(@NonNull Animator animation) {
+            public void onAnimationRepeat(Animator animation) {
             }
         });
+        animator.start();
     }
 
     /**
@@ -362,30 +410,49 @@ final class WheelView extends View {
         });
     }
 
+    /**
+     * Function to cancel animation
+     */
+    public void cancelAnimation() {
+        animate().cancel();
+        clearAnimation();
+    }
+
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        try {
-            initComponents();
-            drawWheelBackground(canvas);
-            float tempAngle = 0;
-            float sweepAngle = (float) 360 / wheelItems.size();
-            for (int i = 0; i < wheelItems.size(); i++) {
-                archPaint.setColor(wheelItems.get(i).getBackgroundColor());
-                canvas.drawArc(range, tempAngle, sweepAngle, true, archPaint);
-                drawText(canvas, tempAngle, sweepAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText(), wheelItems.get(i).getTextColor());
-                tempAngle += sweepAngle;
-            }
-            drawShadow(canvas);
-        } catch (NullPointerException e) {
-            String message = "Wheel items is null, please add wheel items before draw";
-            throw new NullPointerException(message);
-        } catch (ArithmeticException e) {
-            String message = "Wheel items size is zero, please add wheel items before draw";
-            throw new ArithmeticException(message);
-        } catch (Exception e) {
-            e.printStackTrace();
+        initComponents();
+        drawWheelBackground(canvas);
+        if (wheelItems == null || wheelItems.isEmpty()) {
+            String message = "Wheel items is null or empty, please add wheel items before draw";
+            Log.e(TAG, message);
+            return;
         }
+        float tempAngle = 0;
+        float sweepAngle = (float) 360 / wheelItems.size();
+        float currentId = -1;
+        int count = 1;
+        for (int i = 0; i < wheelItems.size(); i++) {
+            if (currentId != wheelItems.get(i).getId()) {
+                currentId = wheelItems.get(i).getId();
+                count = 1;
+            }
+            if (wheelItems.get(i).isVisible()) {
+                archPaint.setColor(wheelItems.get(i).getBackgroundColor());
+            } else {
+                archPaint.setColor(setAlpha(wheelItems.get(i).getBackgroundColor(), UNAVAILABLE_ITEM_ALPHA));
+            }
+            canvas.drawArc(range, tempAngle, sweepAngle + 1, true, archPaint);
+            if (count == wheelItems.get(i).getProbability() / 2 + 1) {
+                int textColor = wheelItems.get(i).isVisible() ? wheelItems.get(i).getTextColor() : setAlpha(wheelItems.get(i).getTextColor(), UNAVAILABLE_ITEM_ALPHA); // 20% transparent
+                float centerAngle = wheelItems.get(i).getProbability() % 2 == 0 ? 0 : sweepAngle;
+                drawText(canvas, tempAngle, centerAngle, wheelItems.get(i).getText() == null ? "" : wheelItems.get(i).getText(), textColor);
+                count++;
+            }
+            count++;
+            tempAngle += sweepAngle;
+        }
+        drawShadow(canvas);
     }
 
     @Override
@@ -396,5 +463,48 @@ final class WheelView extends View {
         radius = width - padding * 2;
         center = width / 2;
         setMeasuredDimension(width, width);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (wheelMode == WheelMode.VISUAL) {
+                float x = event.getX();
+                float y = event.getY();
+                int touchedItemIndex = getTouchedItemIndex(x, y);
+                if (touchedItemIndex != -1) {
+                    WheelItem touchedItem = wheelItems.get(touchedItemIndex);
+                    touchedItem.setVisible(!touchedItem.isVisible());
+                    invalidate();
+                    if (onSliceClick != null) {
+                        onSliceClick.onClick(touchedItem);
+                    }
+                }
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private int getTouchedItemIndex(float x, float y) {
+        // Calculate the angle and determine which item was touched
+        float angle = (float) (Math.toDegrees(Math.atan2(y - center, x - center)) + 360) % 360;
+        float sweepAngle = 360f / wheelItems.size();
+        for (int i = 0; i < wheelItems.size(); i++) {
+            if (angle >= i * sweepAngle && angle < (i + 1) * sweepAngle) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int calculateTargetedSliceIndex(float rotation) {
+        float rotatedAngle = (rotation + 360) % 360;
+        float sweepAngle = 360f / wheelItems.size();
+        float theta = (270 - rotatedAngle + 360) % 360;
+        return (int) (theta / sweepAngle);
+    }
+
+    private int setAlpha(int color, int alpha) {
+        return (color & 0x00FFFFFF) | (alpha << 24);
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.recyclerview.widget.RecyclerView
 import com.vungn.luckywheel.LuckyWheel
+import com.vungn.luckywheel.OnLuckyWheelReachTheTarget
 import com.vungn.luckywheel.SpinTime
 import com.vungn.luckywheel.WheelItem
 import com.vungn.luckywheel.WheelListener
@@ -80,15 +81,26 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private fun setupLuckyWheel(listener: Listener?) {
             lw.addWheelItems(wheelItems)
-            lw.setLuckyWheelReachTheTarget {
-                binding.sbTextSize.isEnabled = true
-                binding.sbSliceRepeat.isEnabled = true
-                binding.sbSpinTime.isEnabled = true
-                if (binding.swAutoHide.isChecked) {
-                    lw.resetWheel()
+            lw.setLuckyWheelReachTheTarget(object : OnLuckyWheelReachTheTarget {
+                override fun onReachFinalTarget(wheelItem: WheelItem?) {
+                    binding.sbTextSize.isEnabled = true
+                    binding.sbSliceRepeat.isEnabled = true
+                    binding.sbSpinTime.isEnabled = true
+                    if (binding.swAutoHide.isChecked) {
+                        lw.resetWheel()
+                    }
+                    wheelItem?.let {
+                        listener?.onSpinTheWheelSuccess(it, binding.swAutoHide.isChecked)
+                    }
                 }
-                listener?.onSpinTheWheelSuccess(it, binding.swAutoHide.isChecked)
-            }
+
+                override fun onTargetChanged(wheelItem: WheelItem?) {
+                    wheelItem?.let {
+                        listener?.onTargetChanged(it)
+                    }
+                }
+
+            })
             lw.setListener(object : WheelListener {
                 override fun onSlideTheWheel() {
                     spinTheWheel()
@@ -261,6 +273,8 @@ class RvAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
         fun onSpinTheWheelSuccess(wheelItem: WheelItem, autoHide: Boolean)
+
+        fun onTargetChanged(wheelItem: WheelItem)
 
         fun onAddItemClick()
 

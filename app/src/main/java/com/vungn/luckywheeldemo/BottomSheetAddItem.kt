@@ -1,5 +1,6 @@
 package com.vungn.luckywheeldemo
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.vungn.luckywheel.WheelItem
 import com.vungn.luckywheeldemo.databinding.BottomsheetNewItemBinding
+import java.math.RoundingMode
 
 class BottomSheetAddItem : BottomSheetDialogFragment {
     private lateinit var binding: BottomsheetNewItemBinding
@@ -17,28 +19,39 @@ class BottomSheetAddItem : BottomSheetDialogFragment {
     private var textColor: Int = Color.WHITE
     private var backgroundColor: Int = Color.BLACK
     private var probability: Int = 1
+    private var totalSlices: Int = 0
+    private var originSliceCount: Int = 1
+    private var newId: Long = 0
 
-    constructor() : super()
-    constructor(contentLayoutId: Int) : super(contentLayoutId)
+    constructor(newId: Long, totalSlices: Int) : super() {
+        this.newId = newId
+        this.totalSlices = totalSlices
+    }
+
+    constructor(newId: Long, totalSlices: Int, contentLayoutId: Int) : super(contentLayoutId) {
+        this.newId = newId
+        this.totalSlices = totalSlices
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = BottomsheetNewItemBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.numberStepper.setValue(probability)
+        binding.tvProbability.text = "${
+            (probability.toFloat() / totalSlices.toFloat() * 100).toBigDecimal()
+                .setScale(1, RoundingMode.UP)
+        }%"
         binding.apply {
             btnAdd.setOnClickListener {
                 val wheelItem = WheelItem(
-                    backgroundColor,
-                    textColor,
-                    content,
-                    probability
+                    newId, backgroundColor, textColor, content, probability
                 )
                 listener?.onAddItem(wheelItem)
                 dismiss()
@@ -56,11 +69,15 @@ class BottomSheetAddItem : BottomSheetDialogFragment {
                     backgroundColor = color
                 }
             }
-            etProbability.addTextChangedListener(onTextChanged = { text, _, _, _ ->
-                probability = try {
-                    text.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    1
+            numberStepper.addOnValueChangeListener(object : NumberStepper.OnValueChangeListener {
+                override fun onValueChange(value: Int) {
+
+                    val newTotalSlices = totalSlices + value - originSliceCount
+                    val probability =
+                        (value.toFloat() / newTotalSlices.toFloat() * 100).toBigDecimal()
+                            .setScale(1, RoundingMode.UP)
+                    binding.tvProbability.text = "$probability%"
+                    this@BottomSheetAddItem.probability = value
                 }
             })
         }

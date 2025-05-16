@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnRotationListener {
     private WheelView wheelView;
-    private ImageView arrow;
+    private ImageView arrow, border;
     private boolean isRotate = false;
     @Nullable
     private WheelListener listener;
@@ -50,6 +51,7 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
         wheelView = findViewById(R.id.wv_main_wheel);
         wheelView.setOnRotationListener(this);
         arrow = findViewById(R.id.iv_arrow);
+        border = findViewById(R.id.iv_border);
         arrow.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onTouchTheSpin();
@@ -69,8 +71,9 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     public void applyAttribute(AttributeSet attrs) {
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.LuckyWheel, 0, 0);
         try {
-            int borderColor = typedArray.getColor(R.styleable.LuckyWheel_border_color, Color.TRANSPARENT);
+            int backgroundColor = typedArray.getColor(R.styleable.LuckyWheel_background_color, Color.TRANSPARENT);
             int borderWidth = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_border_width, getDpOf(20));
+            int borderSrc = typedArray.getResourceId(R.styleable.LuckyWheel_border_src, 0);
             int shadowSrc = typedArray.getResourceId(R.styleable.LuckyWheel_shadow_src, 0);
             int arrowImage = typedArray.getResourceId(R.styleable.LuckyWheel_arrow_image, R.drawable.ig_arrow);
             int arrowWidth = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_arrow_width, getDpOf(50));
@@ -79,7 +82,7 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             int textPadding = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_padding, 0);
             int textSize = typedArray.getDimensionPixelSize(R.styleable.LuckyWheel_text_size, getDpOf(15));
             int fontFamily = typedArray.getResourceId(R.styleable.LuckyWheel_font_family, 0);
-            wheelView.setBorder(borderColor);
+            wheelView.setWheelBackgroundColor(backgroundColor);
             wheelView.setPadding(borderWidth);
             wheelView.setShadow(getBitmapFromResource(shadowSrc));
             wheelView.setItemsImagePadding(imagePadding);
@@ -89,10 +92,43 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
             arrow.setImageResource(arrowImage);
             arrow.getLayoutParams().width = arrowWidth;
             arrow.getLayoutParams().height = arrowHeight;
+            border.setImageResource(borderSrc);
         } catch (Exception e) {
             e.printStackTrace();
         }
         typedArray.recycle();
+    }
+
+    /**
+     * Function to get bitmap of wheel
+     *
+     * @param width  width of bitmap
+     * @param height height of bitmap
+     * @return Bitmap of wheel
+     */
+    public Bitmap getBitmap(int width, int height) {
+        this.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        this.layout(0, 0, width, height);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+        return bitmap;
+    }
+
+    public Bitmap getBitmap() {
+        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+        return bitmap;
+    }
+
+    /**
+     * Function to set wheel mode
+     *
+     * @param mode Wheel mode
+     */
+    public void setWheelMode(WheelMode mode) {
+        wheelView.setWheelMode(mode);
     }
 
     /**
@@ -105,21 +141,48 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     }
 
     /**
+     * Function to set slice click listener
+     *
+     * @param onSliceClick Slice click listener
+     */
+    public void setSliceClick(OnSliceClick onSliceClick) {
+        wheelView.setOnSliceClick(onSliceClick);
+    }
+
+    /**
      * Function to set background color of wheel
      *
      * @param color background color
      */
-    public void setWheelBorder(int color) {
-        wheelView.setBorder(color);
+    public void setWheelBackgroundColor(int color) {
+        wheelView.setWheelBackgroundColor(color);
     }
 
     /**
-     * Function to set padding of wheel
+     * Function to set border bitmap
+     *
+     * @param bitmap border bitmap
+     */
+    public void setWheelBorder(Bitmap bitmap) {
+        border.setImageBitmap(bitmap);
+    }
+
+    /**
+     * Function to set border drawable
+     *
+     * @param drawable border drawable
+     */
+    public void setWheelBorder(Drawable drawable) {
+        border.setImageDrawable(drawable);
+    }
+
+    /**
+     * Function to set border width of wheel
      *
      * @param padding padding
      */
-    public void setWheelPadding(int padding) {
-        wheelView.setPadding(padding);
+    public void setWheelBorderWidth(int width) {
+        wheelView.setPadding(width);
     }
 
     /**
@@ -267,6 +330,14 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
     }
 
     /**
+     * Function to cancel animation of wheel
+     */
+    public void cancelAnimation() {
+        wheelView.cancelAnimation();
+        clearAnimation();
+    }
+
+    /**
      * Function to rotate wheel to degree
      *
      * @param number Number to rotate
@@ -299,15 +370,13 @@ public class LuckyWheel extends FrameLayout implements View.OnTouchListener, OnR
                 dx = x2 - x1;
                 dy = y2 - y1;
                 if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx < 0 && Math.abs(dx) > SWIPE_DISTANCE_THRESHOLD)
-                        if (listener != null) {
-                            listener.onSlideTheWheel();
-                        }
+                    if (dx < 0 && Math.abs(dx) > SWIPE_DISTANCE_THRESHOLD) if (listener != null) {
+                        listener.onSlideTheWheel();
+                    }
                 } else {
-                    if (dy > 0 && Math.abs(dy) > SWIPE_DISTANCE_THRESHOLD)
-                        if (listener != null) {
-                            listener.onSlideTheWheel();
-                        }
+                    if (dy > 0 && Math.abs(dy) > SWIPE_DISTANCE_THRESHOLD) if (listener != null) {
+                        listener.onSlideTheWheel();
+                    }
                 }
                 break;
             default:

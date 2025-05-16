@@ -5,5 +5,7 @@ package com.vungn.luckywheel;
  */
 
 public interface OnLuckyWheelReachTheTarget {
-    void onReachTarget(WheelItem wheelItem);
+    void onReachFinalTarget(WheelItem wheelItem);
+
+    void onTargetChanged(WheelItem wheelItem);
 }

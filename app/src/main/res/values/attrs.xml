@@ -13,4 +13,14 @@
         <attr name="positive_button_text" format="string" />
         <attr name="negative_button_text" format="string" />
     </declare-styleable>
+    <declare-styleable name="NumberStepper">
+        <attr name="value" format="integer" />
+        <attr name="min_value" format="integer" />
+        <attr name="max_value" format="integer" />
+        <attr name="step" format="integer" />
+        <attr name="backgroundTint" format="color" />
+        <attr name="buttonTint" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="textAppearance" format="reference" />
+    </declare-styleable>
 </resources>

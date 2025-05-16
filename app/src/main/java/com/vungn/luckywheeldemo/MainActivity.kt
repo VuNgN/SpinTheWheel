@@ -2,6 +2,9 @@ package com.vungn.luckywheeldemo
 
 import android.app.Dialog
 import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.Toast
@@ -16,6 +19,10 @@ import com.vungn.luckywheeldemo.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val wheelItems: MutableList<WheelItem> = mutableListOf()
+    private var mediaPlayer: MediaPlayer? = null
+    private var soundPool: SoundPool? = null
+    private var soundId = 0
+    private var volume: Float = 1f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +35,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         generateWheelItems()
+        val audioAttributes = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build()
+        soundPool = SoundPool.Builder().setMaxStreams(10) // Allows up to 10 sounds to overlap
+            .setAudioAttributes(audioAttributes).build()
+        soundPool?.let { soundId = it.load(this, R.raw.cut_tick_sound, 1) }
+        mediaPlayer = MediaPlayer.create(this, R.raw.success_sound)
         val adapter = RvAdapter().apply {
             items = wheelItems
             listener = object : RvAdapter.Listener {
@@ -38,11 +51,18 @@ class MainActivity : AppCompatActivity() {
                     showResultDialog(wheelItem, autoHide || items.size <= 2) {
                         deleteItem(items.indexOf(wheelItem))
                     }
+                    mediaPlayer?.start()
                     binding.main.setBackgroundColor(wheelItem.backgroundColor)
                 }
 
+                override fun onTargetChanged(wheelItem: WheelItem) {
+                    playSoundPool()
+                }
+
                 override fun onAddItemClick() {
-                    BottomSheetAddItem().apply {
+                    BottomSheetAddItem(items.maxOf { it.id } + 1, items.let {
+                        it.sumOf { item -> item.probability } + 1
+                    }).apply {
                         setListener(object : BottomSheetAddItem.AddItemListener {
                             override fun onAddItem(wheelItem: WheelItem) {
                                 addItem(wheelItem)
@@ -52,7 +72,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSliceClick(position: Int, wheelItem: WheelItem) {
-                    BottomSheetEditItem(position, wheelItem).apply {
+                    BottomSheetEditItem(position, wheelItem, items.let {
+                        it.sumOf { item -> item.probability }
+                    }).apply {
                         setListener(object : BottomSheetEditItem.EditItemListener {
                             override fun onSaveItem(position: Int, wheelItem: WheelItem) {
                                 updateItem(position, wheelItem)
@@ -103,45 +125,43 @@ class MainActivity : AppCompatActivity() {
     private fun generateWheelItems() {
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#6EAF62"), Color.parseColor("#FFFFFF"), "100 $"
+                1, Color.parseColor("#6EAF62"), Color.parseColor("#FFFFFF"), "100 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#5BBBD2"), Color.parseColor("#FFFFFF"), "2 $"
+                2, Color.parseColor("#5BBBD2"), Color.parseColor("#FFFFFF"), "2 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#5399EC"), Color.parseColor("#FFFFFF"), "3000 $"
+                3, Color.parseColor("#5399EC"), Color.parseColor("#FFFFFF"), "3000 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#6D4CB6"), Color.parseColor("#FFFFFF"), "40 $"
+                4, Color.parseColor("#6D4CB6"), Color.parseColor("#FFFFFF"), "40 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#D84E6F"), Color.parseColor("#FFFFFF"), "50000 $"
+                5, Color.parseColor("#D84E6F"), Color.parseColor("#FFFFFF"), "50000 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#ED7242"), Color.parseColor("#FFFFFF"), "6000000000 $"
+                6, Color.parseColor("#ED7242"), Color.parseColor("#FFFFFF"), "6000000000 $"
             )
         )
         wheelItems.add(
             WheelItem(
-                Color.parseColor("#F4C647"), Color.parseColor("#FFFFFF"), "700000 $"
+                7, Color.parseColor("#F4C647"), Color.parseColor("#FFFFFF"), "700000 $"
             )
         )
     }
 
     private fun showResultDialog(
-        result: WheelItem,
-        autoHide: Boolean,
-        onPositiveClick: () -> Unit = {}
+        result: WheelItem, autoHide: Boolean, onPositiveClick: () -> Unit = {}
     ) {
         val dialogView = MessageDialog(this)
         dialogView.setTitle("We have a winner!")
@@ -170,6 +190,36 @@ class MainActivity : AppCompatActivity() {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
         dialog.show()
+    }
+
+    fun playSoundPool() {
+        soundPool?.play(soundId, volume, volume, 0, 0, 1f)
+    }
+
+    private fun setVolume(fl: Float) {
+        volume = fl
+        mediaPlayer?.setVolume(volume, volume)
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        setVolume(1f)
+        soundPool?.autoResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        setVolume(0f)
+        soundPool?.autoPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPool?.release()
+        soundPool = null
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     companion object {

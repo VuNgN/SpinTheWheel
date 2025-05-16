@@ -12,24 +12,29 @@ import androidx.annotation.Nullable;
  */
 
 public class WheelItem implements Parcelable {
+    private final long id;
     private int backgroundColor;
     private int textColor;
     private Bitmap iconBitmap;
     private String text;
     private int probability;
+    private Boolean isVisible = true;
+    private int priority = 0;
 
-    public WheelItem(int backgroundColor, int textColor, String text) {
-        this(backgroundColor, textColor, text, 1);
+    public WheelItem(long id, int backgroundColor, int textColor, String text) {
+        this(id, backgroundColor, textColor, text, 1);
     }
 
-    public WheelItem(int backgroundColor, int textColor, String text, int probability) {
+    public WheelItem(long id, int backgroundColor, int textColor, String text, int probability) {
+        this.id = id;
         this.backgroundColor = backgroundColor;
         this.textColor = textColor;
         this.text = text;
         this.probability = probability;
     }
 
-    public WheelItem(int backgroundColor, int textColor, Bitmap iconBitmap, String text) {
+    public WheelItem(long id, int backgroundColor, int textColor, Bitmap iconBitmap, String text) {
+        this.id = id;
         this.backgroundColor = backgroundColor;
         this.textColor = textColor;
         this.iconBitmap = iconBitmap;
@@ -37,6 +42,7 @@ public class WheelItem implements Parcelable {
     }
 
     protected WheelItem(Parcel in) {
+        id = in.readLong();
         backgroundColor = in.readInt();
         textColor = in.readInt();
         iconBitmap = in.readParcelable(Bitmap.class.getClassLoader());
@@ -44,7 +50,7 @@ public class WheelItem implements Parcelable {
         probability = in.readInt();
     }
 
-    public static final Creator<WheelItem> CREATOR = new Creator<WheelItem>() {
+    public static final Creator<WheelItem> CREATOR = new Creator<>() {
         @Override
         public WheelItem createFromParcel(Parcel in) {
             return new WheelItem(in);
@@ -55,6 +61,10 @@ public class WheelItem implements Parcelable {
             return new WheelItem[size];
         }
     };
+
+    public long getId() {
+        return id;
+    }
 
     public int getBackgroundColor() {
         return backgroundColor;
@@ -74,6 +84,14 @@ public class WheelItem implements Parcelable {
 
     public int getProbability() {
         return probability;
+    }
+
+    public Boolean isVisible() {
+        return isVisible;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public void setBackgroundColor(int backgroundColor) {
@@ -96,11 +114,19 @@ public class WheelItem implements Parcelable {
         this.probability = probability;
     }
 
+    public void setVisible(Boolean isVisible) {
+        this.isVisible = isVisible;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof WheelItem) {
             WheelItem item = (WheelItem) obj;
-            return item.getBackgroundColor() == backgroundColor && item.getTextColor() == textColor && item.getText().equals(text) && item.getProbability() == probability;
+            return item.getId() == id && item.getBackgroundColor() == backgroundColor && item.getTextColor() == textColor && item.getText().equals(text) && item.getProbability() == probability && item.isVisible() == isVisible && item.getPriority() == priority;
         }
         return false;
     }
@@ -112,9 +138,13 @@ public class WheelItem implements Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeLong(id);
         dest.writeInt(backgroundColor);
         dest.writeInt(textColor);
+        dest.writeParcelable(iconBitmap, flags);
         dest.writeString(text);
         dest.writeInt(probability);
+        dest.writeValue(isVisible);
+        dest.writeInt(priority);
     }
 }

@@ -68,15 +68,48 @@
             app:color="#FFC107" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/et_probability"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:autofillHints="Enter probability"
-        android:hint="Enter probability"
-        android:inputType="number"
-        android:textSize="20sp" />
+        android:layout_marginVertical="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Probability"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_probability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textSize="18sp" />
+
+            <com.vungn.luckywheeldemo.NumberStepper
+                android:id="@+id/number_stepper"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                app:backgroundTint="#474747"
+                app:buttonTint="#1AFFFFFF"
+                app:max_value="99"
+                app:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:min_value="1"
+                app:step="1"
+                app:textColor="@color/white"
+                app:value="1" />
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package com.vungn.luckywheeldemo
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,21 +10,25 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.vungn.luckywheel.WheelItem
 import com.vungn.luckywheeldemo.databinding.BottomsheetEditItemBinding
+import java.math.RoundingMode
 
-class BottomSheetEditItem(private val position: Int, private val item: WheelItem) :
-    BottomSheetDialogFragment() {
+class BottomSheetEditItem(
+    private val position: Int, private val item: WheelItem, private val totalSlices: Int
+) : BottomSheetDialogFragment() {
     private lateinit var binding: BottomsheetEditItemBinding
     private var listener: EditItemListener? = null
     private var content: String = ""
     private var textColor: Int = Color.WHITE
     private var backgroundColor: Int = Color.RED
     private var probability: Int = 1
+    private var originSliceCount: Int = 0
 
     init {
         content = item.text
         textColor = item.textColor
         backgroundColor = item.backgroundColor
         probability = item.probability
+        originSliceCount = item.probability
     }
 
     override fun onCreateView(
@@ -33,16 +38,21 @@ class BottomSheetEditItem(private val position: Int, private val item: WheelItem
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             etNewItem.setText(item.text)
             bcpTextColor.setColor(item.textColor)
             bcpBackgroundColor.setColor(item.backgroundColor)
-            etProbability.setText(item.probability.toString())
+            numberStepper.setValue(item.probability)
+            binding.tvProbability.text = "${
+                (probability.toFloat() / totalSlices.toFloat() * 100).toBigDecimal()
+                    .setScale(1, RoundingMode.UP)
+            }%"
             btnSave.setOnClickListener {
                 val wheelItem = WheelItem(
-                    backgroundColor, textColor, content, probability
+                    item.id, backgroundColor, textColor, content, probability
                 )
                 listener?.onSaveItem(position, wheelItem)
                 dismiss()
@@ -64,11 +74,15 @@ class BottomSheetEditItem(private val position: Int, private val item: WheelItem
                     backgroundColor = color
                 }
             }
-            etProbability.addTextChangedListener(onTextChanged = { text, _, _, _ ->
-                probability = try {
-                    text.toString().toInt()
-                } catch (e: NumberFormatException) {
-                    1
+            numberStepper.addOnValueChangeListener(object : NumberStepper.OnValueChangeListener {
+                override fun onValueChange(value: Int) {
+
+                    val newTotalSlices = totalSlices + value - originSliceCount
+                    val probability =
+                        (value.toFloat() / newTotalSlices.toFloat() * 100).toBigDecimal()
+                            .setScale(1, RoundingMode.UP)
+                    binding.tvProbability.text = "$probability%"
+                    this@BottomSheetEditItem.probability = value
                 }
             })
         }

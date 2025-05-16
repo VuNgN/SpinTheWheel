@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LuckyWheel</string>
     <string name="spin_arrow">Spin Arrow</string>
+    <string name="spin_background">Spin Background</string>
 </resources>
